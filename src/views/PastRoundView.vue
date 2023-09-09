@@ -1,0 +1,126 @@
+<template>
+  <div>
+    <div><LoginLogout :authProp="authTrigger" /></div>
+    <h1 class="mb-3 text-center text-secondary" id="title">THE BATTLE of WHALES</h1>
+    <div class="container mt-5" id="fishBox">
+      <div>
+        <div id="leftFish">🐋</div>
+        <div class="mt-4 mb-4 text-center text-secondary h4">{{ totalAmountSide1 }} EVER</div>
+      </div>
+      <div>
+        <div id="rightFish">🐋</div>
+        <div class="mt-4 mb-4 text-center text-secondary h4">{{ totalAmountSide2 }} EVER</div>
+      </div>
+    </div>
+    <div class="container text-center text-secondary mt-4 mb-4">Date: {{ roundStart }} --- {{ roundEnd }}</div>
+    <div v-if="userBox">
+      <div class="text-center text-secondary mt-4 h5">My bets:</div>
+      <div id="userAmountBox">
+        <div class="mt-4 mb-4 text-center text-secondary h5">{{ userAmountSide1 }} Ever</div>
+        <div class="mt-4 mb-4 text-center text-secondary h5">{{ userAmountSide2 }} Ever</div>
+      </div>
+    </div>
+    <div id="userReward" v-if="userBox" class="container text-center text-secondary mt-4 mb-4">
+      <div v-if="userReward !== null && userReward > 0">
+        <span class="p-3">Reward: {{ userReward }} EVER</span>
+        <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
+        <b-button v-show="claimedReward==false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
+      </div>
+    </div>
+    <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
+      <a href="./#/history" class="link-secondary"><b>Past rounds</b></a>
+    </div>
+    <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
+      <a href="./#/" class="link-secondary"><b>Current round</b></a>
+    </div>
+    <div class="container text-center outline-secondary mt-4">
+      Contract: <b-link class="link-secondary" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress">{{ roundContractAddress }}</b-link>
+    </div>
+  </div>
+</template>
+<script lang="ts">
+import Vue from 'vue'
+import LoginLogout from '@/components/LoginLogout.vue'
+import { getRoundDataByAddress, claim, getUserDataByRound } from '@/wallet.ts'
+import { calcUserReward } from '@/utils'
+
+export default Vue.extend({
+  name: 'HomeView',
+  async mounted() {
+    this.roundContractAddress = this.$route.params.roundAddress
+    const data = await getRoundDataByAddress(this.roundContractAddress)
+    this.roundStart = new Date(data.roundStart * 1000).toLocaleDateString() + ' ' + new Date(data.roundStart * 1000).toLocaleTimeString()
+    this.roundEnd = new Date(data.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(data.roundEnd * 1000).toLocaleTimeString()
+    this.totalAmountSide1 = data.side1
+    this.totalAmountSide2 = data.side2
+    getUserDataByRound(this.roundContractAddress).then((data) => {
+      if(typeof data == 'undefined') return       
+      this.userAmountSide1 = Math.round(data.side1 / 1e9)
+      this.userAmountSide2 = Math.round(data.side2 / 1e9)
+      this.userBetsAddress = data.address
+      this.claimedReward = data.claimedReward
+      this.userReward = calcUserReward(this.userAmountSide1, this.userAmountSide2, this.totalAmountSide1, this.totalAmountSide2)
+      this.userBox = true;
+    })
+  },
+  data() {
+    return {
+      authTrigger: false,
+      fishInputAmount1: 0,
+      fishInputAmount2: 0,
+      alert: false,
+      alertMessage: '',
+      roundStart: null,
+      roundEnd: null,
+      roundContractAddress: '',
+      totalAmountSide1: null,
+      totalAmountSide2: null,
+      userAmountSide1: null,
+      userAmountSide2: null,
+      userReward: null,
+      claimDisabled: false,
+      claimedReward: false,
+      userBetsAddress: null,
+      userBox: false
+    }
+  },
+  methods: {
+    async _claim() {
+      this.claimDisabled = true
+      await claim(this.userBetsAddress)
+      this.claimDisabled = false
+    },
+  },
+  components: {
+    LoginLogout,
+  },
+  watch: {},
+})
+</script>
+
+<style scoped>
+#title{
+   font-family: Robus
+}
+#leftFish,
+#rightFish {
+  font-size: 5em;
+}
+#leftFish {
+  transform: scale(-1, 1);
+}
+#fishBox,
+#userAmountBox {
+  display: flex;
+  justify-content: space-around;
+}
+#leftFishInputAmount,
+#rightFishInputAmount {
+  width: 5em;
+}
+#leftFishBtn button,
+#rightFishBtn button {
+  margin-top: 1em;
+  width: 5em;
+}
+</style>
