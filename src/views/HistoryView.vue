@@ -3,7 +3,7 @@
     <div><LoginLogout :authProp="authTrigger" /></div>
     <div class="container mt-4 mb-4">
     <div v-if="rounds.length == 0" class="text-center">No past rounds yet</div>
-    <div v-else class="text-center text-secondary h4">Past rounds</div>
+    <div v-else class="text-center text-light h4">Past rounds</div>
       <b-table dark striped hover :items="rounds">
        <template #cell(Address)="data">
         <span  v-html="data.value"></span>
@@ -11,7 +11,7 @@
       </b-table>      
     </div>
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
-      <a href="./#/" class="link-secondary"><b>Current round</b></a>
+      <a href="./#/" class="link-light"><b>Current round</b></a>
     </div>
   </div>
 </template>

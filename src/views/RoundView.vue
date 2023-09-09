@@ -1,11 +1,11 @@
 <template>
   <div>
     <div><LoginLogout :authProp="authTrigger" /></div>
-    <h1 id="title" class="mb-3 text-center text-secondary"><span class="h2">❃</span> THE BATTLE of WHALES <span class="h2">❃</span></h1>
+    <h1 id="title" class="mb-3 text-center text-light"><span class="h2">❃</span> THE BATTLE of WHALES <span class="h2">❃</span></h1>
     <div class="container mt-5 mb-5" id="fishBox">
       <div>
         <div id="leftFish" ref="leftFish">🐋</div>
-        <div class="mt-4 mb-4 text-center text-secondary h4">{{ totalAmountSide1 }} EVER</div>
+        <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
         <div id="leftFishInputAmount">
           <b-form-input block v-model="fishInputAmount1" placeholder="0 EVER"></b-form-input>
         </div>
@@ -15,7 +15,7 @@
         </div>
         <div id="leftAddr" class="mt-3">
           <b-input-group size="sm">
-            <b-form-input v-on:focus="$event.target.select()" ref="leftAddr" class="link-secondary" v-model="RD1Address"> </b-form-input>
+            <b-form-input v-on:focus="$event.target.select()" ref="leftAddr" class="link-light" v-model="RD1Address"> </b-form-input>
             <b-input-group-append>
               <b-button variant="outline-primary" id="copyBtnLeft" @click="_copy(1)">Copy</b-button>
               <b-tooltip target="copyBtnLeft" triggers="click">Copied</b-tooltip> 
@@ -25,7 +25,7 @@
       </div>
       <div>
         <div id="rightFish" ref="rightFish">🐋</div>
-        <div class="mt-4 mb-4 text-center text-secondary h4">{{ totalAmountSide2 }} EVER</div>
+        <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
         <div id="leftFishInputAmount">
           <b-form-input v-model="fishInputAmount2" placeholder="0 EVER"></b-form-input>
         </div>
@@ -35,7 +35,7 @@
         </div>
         <div id="RightAddr" class="mt-3">
           <b-input-group size="sm">
-            <b-form-input v-on:focus="$event.target.select()" ref="rightAddr" class="link-secondary" v-model="RD2Address"> </b-form-input>
+            <b-form-input v-on:focus="$event.target.select()" ref="rightAddr" class="link-light" v-model="RD2Address"> </b-form-input>
             <b-input-group-append>
               <b-button variant="outline-primary" id="copyBtnRight" @click="_copy(2)">Copy</b-button>
               <b-tooltip target="copyBtnRight">Copied</b-tooltip>
@@ -49,29 +49,29 @@
       <b-progress :value="progressValue" height="0.2rem" variant="secondary" :max="progressMax" :show-value="false"></b-progress>
     </div>
 
-    <div class="container text-center text-secondary mt-4 mb-4">Time: {{ roundStart }} --- {{ roundEnd }}</div>
+    <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} --- {{ roundEnd }}</div>
     <div class="container text-center mt-4">
       <b-alert mt-4 mb-4 :show="alert">{{ alertMessage }}</b-alert>
     </div>
     <div v-if="userBox" class="mt-4">
-      <div class="text-center text-secondary mt-4 h5">My bets:</div>
+      <div class="text-center text-light mt-4 h5">My bets:</div>
       <div id="userAmountBox">
-        <div class="mt-4 mb-4 text-center text-secondary h5">{{ userAmountSide1 }} Ever</div>
-        <div class="mt-4 mb-4 text-center text-secondary h5">{{ userAmountSide2 }} Ever</div>
+        <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide1 }} Ever</div>
+        <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide2 }} Ever</div>
       </div>
     </div>
     <div id="footer">
       <div id="links">
         <div variant="outline-secondary" class="text-center">
-          <a href="./#/history" class="link-secondary"><b>Past rounds</b></a>
+          <a href="./#/history" class="link-light"><b>Past rounds</b></a>
         </div>
         <div variant="outline-secondary" class="text-center">
-          <a href="./#/rules" class="link-secondary"><b>Rules</b></a>
+          <a href="./#/rules" class="link-light"><b>Rules</b></a>
         </div>
       </div>
 
-      <div class="container text-center text-secondary mt-4 footer">
-        Round contract: <b-link class="link-secondary" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
+      <div class="container text-center text-light mt-4 footer">
+        Round contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
       </div>
     </div>
   </div>
@@ -237,6 +237,10 @@ export default Vue.extend({
 })
 </script> 
 <style scoped>
+input {
+  background-color:  #5d5d61!important;
+  color: white;
+}
 #leftFish {
   transform: scale(-1, 1);
   font-size: 5em;

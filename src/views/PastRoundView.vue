@@ -1,26 +1,26 @@
 <template>
   <div>
     <div><LoginLogout :authProp="authTrigger" /></div>
-    <h1 class="mb-3 text-center text-secondary" id="title">THE BATTLE of WHALES</h1>
+    <h1 class="mb-3 text-center text-light" id="title">THE BATTLE of WHALES</h1>
     <div class="container mt-5" id="fishBox">
       <div>
         <div id="leftFish">🐋</div>
-        <div class="mt-4 mb-4 text-center text-secondary h4">{{ totalAmountSide1 }} EVER</div>
+        <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
       </div>
       <div>
         <div id="rightFish">🐋</div>
-        <div class="mt-4 mb-4 text-center text-secondary h4">{{ totalAmountSide2 }} EVER</div>
+        <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
       </div>
     </div>
-    <div class="container text-center text-secondary mt-4 mb-4">Date: {{ roundStart }} --- {{ roundEnd }}</div>
+    <div class="container text-center text-light mt-4 mb-4">Date: {{ roundStart }} --- {{ roundEnd }}</div>
     <div v-if="userBox">
-      <div class="text-center text-secondary mt-4 h5">My bets:</div>
+      <div class="text-center text-light mt-4 h5">My bets:</div>
       <div id="userAmountBox">
-        <div class="mt-4 mb-4 text-center text-secondary h5">{{ userAmountSide1 }} Ever</div>
-        <div class="mt-4 mb-4 text-center text-secondary h5">{{ userAmountSide2 }} Ever</div>
+        <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide1 }} Ever</div>
+        <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide2 }} Ever</div>
       </div>
     </div>
-    <div id="userReward" v-if="userBox" class="container text-center text-secondary mt-4 mb-4">
+    <div id="userReward" v-if="userBox" class="container text-center text-light mt-4 mb-4">
       <div v-if="userReward !== null && userReward > 0">
         <span class="p-3">Reward: {{ userReward }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
@@ -28,13 +28,13 @@
       </div>
     </div>
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
-      <a href="./#/history" class="link-secondary"><b>Past rounds</b></a>
+      <a href="./#/history" class="link-light"><b>Past rounds</b></a>
     </div>
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
-      <a href="./#/" class="link-secondary"><b>Current round</b></a>
+      <a href="./#/" class="link-light"><b>Current round</b></a>
     </div>
     <div class="container text-center outline-secondary mt-4">
-      Contract: <b-link class="link-secondary" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress">{{ roundContractAddress }}</b-link>
+      Contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress">{{ roundContractAddress }}</b-link>
     </div>
   </div>
 </template>
