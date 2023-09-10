@@ -12,7 +12,7 @@
         <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
       </div>
     </div>
-    <div class="container text-center text-light mt-4 mb-4">Date: {{ roundStart }} --- {{ roundEnd }}</div>
+    <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} --- {{ roundEnd }}</div>
     <div v-if="userBox">
       <div class="text-center text-light mt-4 h5">My bets:</div>
       <div id="userAmountBox">
@@ -34,7 +34,7 @@
       <a href="./#/" class="link-light"><b>Current round</b></a>
     </div>
     <div class="container text-center light text-light mt-4">
-      Contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress">{{ roundContractAddress }}</b-link>
+      Contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
   </div>
 </template>
@@ -48,7 +48,7 @@ export default Vue.extend({
   name: 'HomeView',
   async mounted() {
     this.roundContractAddress = this.$route.params.roundAddress
-    const data = await getRoundDataByAddress(this.roundContractAddress)
+    const data = await getRoundDataByAddress(this.roundContractAddress)  
     this.roundStart = new Date(data.roundStart * 1000).toLocaleDateString() + ' ' + new Date(data.roundStart * 1000).toLocaleTimeString()
     this.roundEnd = new Date(data.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(data.roundEnd * 1000).toLocaleTimeString()
     this.totalAmountSide1 = data.side1
