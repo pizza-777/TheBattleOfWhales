@@ -81,8 +81,8 @@ import Vue from 'vue'
 import LoginLogout from '@/components/LoginLogout.vue'
 import { RD1Address, RD2Address } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet.ts'
+import { sleep } from '@/utils'
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 export default Vue.extend({
   name: 'HomeView',
