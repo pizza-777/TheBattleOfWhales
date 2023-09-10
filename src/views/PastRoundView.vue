@@ -33,7 +33,7 @@
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
       <a href="./#/" class="link-light"><b>Current round</b></a>
     </div>
-    <div class="container text-center outline-secondary mt-4">
+    <div class="container text-center light text-light mt-4">
       Contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress">{{ roundContractAddress }}</b-link>
     </div>
   </div>
