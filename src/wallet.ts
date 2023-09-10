@@ -263,6 +263,10 @@ export async function getUserDataByRound(roundAddress: string) {
   // Optionally request account state
   const provider = await ever()
   if ((await provider.hasProvider()) == false) return
+
+  const auth = await authState()
+  if (!auth || typeof auth == 'undefined') return
+  
   const accountInteraction = await everWallet()
 
   const roundContract = new provider.Contract(RoundContract.abi, new Address(roundAddress))
