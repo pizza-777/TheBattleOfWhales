@@ -18,7 +18,7 @@
             <b-form-input v-on:focus="$event.target.select()" ref="leftAddr" class="link-light" v-model="RD1Address"> </b-form-input>
             <b-input-group-append>
               <b-button variant="outline-primary" id="copyBtnLeft" @click="_copy(1)">Copy</b-button>
-              <b-tooltip target="copyBtnLeft" triggers="click">Copied</b-tooltip> 
+              <b-tooltip target="copyBtnLeft" triggers="click">Copied</b-tooltip>
             </b-input-group-append>
           </b-input-group>
         </div>
@@ -44,7 +44,7 @@
         </div>
       </div>
     </div>
-
+    <div class="container text-light text-center">Round state: {{ roundState }}</div>
     <div class="container">
       <b-progress :value="progressValue" height="0.2rem" variant="secondary" :max="progressMax" :show-value="false"></b-progress>
     </div>
@@ -83,7 +83,6 @@ import { RD1Address, RD2Address } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet.ts'
 import { sleep } from '@/utils'
 
-
 export default Vue.extend({
   name: 'HomeView',
   mounted() {
@@ -101,6 +100,7 @@ export default Vue.extend({
       alertMessage: '',
       roundStart: null,
       roundEnd: null,
+      roundStartTimestamp: null,
       roundEndTimestamp: null,
       roundContractAddress: '',
       totalAmountSide1: null,
@@ -116,6 +116,7 @@ export default Vue.extend({
       currentTime: null,
       progressMax: 100,
       progressValue: 0,
+      roundState: '',
     }
   },
   methods: {
@@ -181,10 +182,20 @@ export default Vue.extend({
       this.$refs.leftFish.style.fontSize = side1 > side2 ? '5.5em' : '5em'
       this.$refs.rightFish.style.fontSize = side2 > side2 ? '5.5em' : '5em'
     },
+    updateRoundState() {
+      if (this.currentTime < this.roundStartTimestamp + 60 * 1000) {
+        this.roundState = 'Prepearing...'
+      } else if (this.currentTime > this.roundStartTimestamp + 60 * 1000 && this.currentTime < this.roundEndTimestamp) {
+        this.roundState = 'Running'
+      } else if (this.currentTime > this.roundEndTimestamp) {
+        this.roundState = 'Finished'
+      }
+    },
     updateAll() {
       getRoundTime().then((time) => {
         this.roundStart = new Date(time.roundStart * 1000).toLocaleTimeString()
         this.roundEnd = new Date(time.roundEnd * 1000).toLocaleTimeString()
+        this.roundStartTimestamp = time.roundStart * 1000
         this.roundEndTimestamp = time.roundEnd * 1000
         getRoundContractAddress(time.roundStart, time.roundEnd).then((a) => {
           this.roundContractAddress = a.toString()
@@ -223,19 +234,18 @@ export default Vue.extend({
     currentTime(_, currentTime) {
       //wait minute and update all
       if (currentTime > this.roundEndTimestamp) {
-        this.alertMessage = 'Round finished. New round will start in one minute.'
-        this.alert = true
-        if (currentTime > (this.roundEndTimestamp + 60 * 1000)) {
+        if (currentTime > this.roundEndTimestamp + 60 * 1000) {
           this.updateAll()
         }
+        this.updateRoundState()
         return
       }
-
+      this.updateRoundState()
       this.progressValue = 100 - ((this.roundEndTimestamp - currentTime) / 1000 / 60 / 5) * 100 // todo change interval value
     },
   },
 })
-</script> 
+</script>
 <style scoped>
 #leftFish {
   transform: scale(-1, 1);
