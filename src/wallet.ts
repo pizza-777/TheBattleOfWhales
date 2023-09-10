@@ -43,7 +43,6 @@ async function ever() {
 async function everWallet() {
   const _ever = await ever()
   if (typeof _accountInteraction === 'undefined') {
-    console.log('test')
     const { accountInteraction } = await _ever.requestPermissions({
       permissions: ['basic', 'accountInteraction'],
     })
@@ -123,7 +122,6 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
     vueGlobal.betsSubscriber = value
   },
 })
-
 ;(await betsSubscriber()).on('data', (data) => {
   vueGlobal.betsSubscriber = data
   return data
@@ -266,23 +264,27 @@ export async function getUserDataByRound(roundAddress: string) {
 
   const auth = await authState()
   if (!auth || typeof auth == 'undefined') return
-  
+
   const accountInteraction = await everWallet()
 
-  const roundContract = new provider.Contract(RoundContract.abi, new Address(roundAddress))
+  try {
+    const roundContract = new provider.Contract(RoundContract.abi, new Address(roundAddress))
+   
+    const userBetsAddress: { value0: Address } = await roundContract.methods.calcBetAddress({ player: accountInteraction.address } as never).call()
 
-  const userBetsAddress: { value0: Address } = await roundContract.methods.deployBetContract({ player: accountInteraction.address } as never).call()
+    const userBetsContract = new provider.Contract(BetContract.abi, new Address(userBetsAddress.value0.toString()))
 
-  const userBetsContract = new provider.Contract(BetContract.abi, new Address(userBetsAddress.value0.toString()))
-
-  const userBetsData: { value0: number; value1: number; value2: string; value3: number; value4: number } = await userBetsContract.methods.getBetsData({} as never).call()
-  return {
-    address: userBetsAddress.value0,
-    side1: userBetsData.value0,
-    side2: userBetsData.value1,
-    claimedReward: userBetsData.value2,
-    roundStart: userBetsData.value3,
-    roundEnd: userBetsData.value4,
+    const userBetsData: { value0: number; value1: number; value2: string; value3: number; value4: number } = await userBetsContract.methods.getBetsData({} as never).call()
+    return {
+      address: userBetsAddress.value0,
+      side1: userBetsData.value0,
+      side2: userBetsData.value1,
+      claimedReward: userBetsData.value2,
+      roundStart: userBetsData.value3,
+      roundEnd: userBetsData.value4,
+    }
+  } catch (e) {
+    console.error('getUserDataByRound error:' + JSON.stringify(e))
   }
 }
 //total bets
