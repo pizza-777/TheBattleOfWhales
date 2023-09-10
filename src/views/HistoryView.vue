@@ -2,14 +2,16 @@
   <div>
     <div><LoginLogout :authProp="authTrigger" /></div>
     <div class="container mt-4 mb-4">
-    <div v-if="rounds.length == 0" class="text-center">No past rounds yet</div>
-    <div v-else class="text-center text-light h4">Past rounds</div>
-      <b-table dark striped hover :items="rounds">
-       <template #cell(Address)="data">
-        <span  v-html="data.value"></span>
-      </template>
-      </b-table>      
+      <div v-if="rounds.length == 0" class="text-center">No past rounds yet</div>
+      <div v-else class="text-center text-light h4">Past rounds</div>
+      <b-table dark striped hover :items="rounds" :per-page="perPage" :current-page="currentPage">
+        <template #cell(Address)="data">
+          <span v-html="data.value"></span>
+        </template>
+      </b-table>
+      <b-pagination align="center" v-model="currentPage" :total-rows="rows" :per-page="perPage"></b-pagination>
     </div>
+
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
       <a href="./#/" class="link-light"><b>Current round</b></a>
     </div>
@@ -24,21 +26,25 @@ import { getRoundDataByAddress } from '@/wallet'
 export default Vue.extend({
   name: 'HomeView',
   mounted() {
-    getRounds().then(async (rounds) => {      
-      this.rounds = await Promise.all(rounds.map(async (round) => {      
-        const roundData = await getRoundDataByAddress(round.id)        
-        return {
-          Ended: (new Date(roundData.roundEnd * 1000)).toLocaleDateString() + ' ' + (new Date(roundData.roundStart * 1000)).toLocaleTimeString(),
-          Address: '<a href="/#/round/'+round.id+'">'+round.id+'</a>',         
-          Total: Math.floor((roundData.side1 + roundData.side2)),
-        }
-      })      )
+    getRounds().then(async (rounds) => {
+      this.rounds = await Promise.all(
+        rounds.map(async (round) => {
+          const roundData = await getRoundDataByAddress(round.id)
+          return {
+            Ended: new Date(roundData.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(roundData.roundStart * 1000).toLocaleTimeString(),
+            Address: '<a href="/#/round/' + round.id + '">' + round.id + '</a>',
+            Total: Math.floor(roundData.side1 + roundData.side2),
+          }
+        })
+      )
     })
   },
   data() {
     return {
       authTrigger: false,
       rounds: [],
+      perPage: 10,
+      currentPage:  1
     }
   },
   methods: {},
@@ -46,5 +52,17 @@ export default Vue.extend({
     LoginLogout,
   },
   watch: {},
+  computed: {
+    rows() {
+      return this.rounds.length
+    },
+  },
 })
 </script>
+<style>
+.page-link{
+  background-color:  #5d5d61!important;
+  color: white!important;
+  cursor: pointer;
+}
+</style>
