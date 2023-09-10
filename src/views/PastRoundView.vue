@@ -24,7 +24,16 @@
       <div v-if="userReward !== null && userReward > 0">
         <span class="p-3">Reward: {{ userReward }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
-        <b-button v-show="claimedReward==false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
+        <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
+      </div>
+      <div id="claimAddr" v-show="!claimDisabled" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
+        <b-input-group size="sm">
+          <b-form-input v-on:focus="$event.target.select()" ref="claimAddr" class="link-light" v-model="userBetsAddress"> </b-form-input>
+          <b-input-group-append>
+            <b-button variant="outline-primary" id="copyBtnClaim" @click="_copy()">Copy</b-button>
+            <b-tooltip target="copyBtnClaim">Copied</b-tooltip>
+          </b-input-group-append>
+        </b-input-group>
       </div>
     </div>
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
@@ -42,25 +51,26 @@
 import Vue from 'vue'
 import LoginLogout from '@/components/LoginLogout.vue'
 import { getRoundDataByAddress, claim, getUserDataByRound } from '@/wallet.ts'
-import { calcUserReward } from '@/utils'
+import { calcUserReward, sleep } from '@/utils'
 
 export default Vue.extend({
   name: 'HomeView',
   async mounted() {
     this.roundContractAddress = this.$route.params.roundAddress
-    const data = await getRoundDataByAddress(this.roundContractAddress)  
+    const data = await getRoundDataByAddress(this.roundContractAddress)
     this.roundStart = new Date(data.roundStart * 1000).toLocaleDateString() + ' ' + new Date(data.roundStart * 1000).toLocaleTimeString()
     this.roundEnd = new Date(data.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(data.roundEnd * 1000).toLocaleTimeString()
     this.totalAmountSide1 = data.side1
     this.totalAmountSide2 = data.side2
     getUserDataByRound(this.roundContractAddress).then((data) => {
-      if(typeof data == 'undefined') return       
+      if (typeof data == 'undefined') return
       this.userAmountSide1 = Math.round(data.side1 / 1e9)
       this.userAmountSide2 = Math.round(data.side2 / 1e9)
-      this.userBetsAddress = data.address
+      this.userBetsAddress = data.address.toString()
       this.claimedReward = data.claimedReward
+      this.claimDisabled = this.claimedReward
       this.userReward = calcUserReward(this.userAmountSide1, this.userAmountSide2, this.totalAmountSide1, this.totalAmountSide2)
-      this.userBox = true;
+      this.userBox = true
     })
   },
   data() {
@@ -80,15 +90,20 @@ export default Vue.extend({
       userReward: null,
       claimDisabled: false,
       claimedReward: false,
-      userBetsAddress: null,
-      userBox: false
+      userBetsAddress: '',
+      userBox: false,
     }
   },
   methods: {
     async _claim() {
-      this.claimDisabled = true
       await claim(this.userBetsAddress)
-      this.claimDisabled = false
+      this.claimDisabled = true
+    },
+    async _copy() {
+      this.$refs.claimAddr.focus()
+      document.execCommand('copy')
+      await sleep(1000)
+      this.$root.$emit('bv::hide::tooltip', 'copyBtnClaim')
     },
   },
   components: {
@@ -99,8 +114,12 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-#title{
-   font-family: Robus
+input {
+  background-color: #5d5d61 !important;
+  color: white;
+}
+#title {
+  font-family: Robus;
 }
 #leftFish,
 #rightFish {
@@ -113,14 +132,5 @@ export default Vue.extend({
 #userAmountBox {
   display: flex;
   justify-content: space-around;
-}
-#leftFishInputAmount,
-#rightFishInputAmount {
-  width: 5em;
-}
-#leftFishBtn button,
-#rightFishBtn button {
-  margin-top: 1em;
-  width: 5em;
 }
 </style>
