@@ -24,10 +24,14 @@ contract Bet {
     function claim() public {
         require(msg.value >= 1e8, 101, "Small attached amount");
         require(block.timestamp > roundEnd, 102, "Too early request");
-        require(claimedReward == false, 103, "The reward has been already claimed");
+        require(
+            claimedReward == false,
+            103,
+            "The reward has been already claimed"
+        );
 
         claimedReward = true;
-        Round(round).claimReward{value: 1e8, bounce: true, flag: 3}(
+        Round(round).claimReward{value: msg.value, bounce: true, flag: 0}(
             player,
             side1,
             side2
@@ -40,5 +44,10 @@ contract Bet {
         returns (uint128, uint128, bool, uint32, uint32)
     {
         return (side1, side2, claimedReward, roundStart, roundEnd);
+    }
+
+    //claim reward directly
+    receive() external {
+        claim();
     }
 }

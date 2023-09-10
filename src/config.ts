@@ -1,3 +1,3 @@
 
-export const RD1Address='0:a170dd204cebaa7b565eb6ec16f13a88e64e9cbd687e65ef8a25f4a29ec04b46'
-export const RD2Address='0:99f920ea3c95b50da10acee8e77350dcb66c979818f1251e1e344b1e90e3b1ab'
+export const RD1Address='0:e238456c6ac988531f10a635c1ffba110b12196876d0ade96ea793cf0ea38b50'
+export const RD2Address='0:eff3f48706a83e2ca10e100aa1152421430be2d64b891fc9549a17e19df51691'

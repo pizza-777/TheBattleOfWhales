@@ -78,7 +78,7 @@ contract Round {
 			amountOnSide2
 		);
 		
-		player.transfer(reward, true, 3);
+		player.transfer(reward, true, 64);
 	}
 
 	function calcReward(
