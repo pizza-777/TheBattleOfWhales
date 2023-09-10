@@ -234,9 +234,10 @@ export default Vue.extend({
     currentTime(_, currentTime) {
       //wait minute and update all
       if (currentTime > this.roundEndTimestamp) {
-        if (currentTime > this.roundEndTimestamp + 60 * 1000) {
+        if (currentTime > (this.roundEndTimestamp + 60 * 1000)) {
           this.updateAll()
         }
+        this.progressValue = 100;
         this.updateRoundState()
         return
       }
