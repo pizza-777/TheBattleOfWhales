@@ -27,16 +27,20 @@ export default Vue.extend({
   name: 'HomeView',
   mounted() {
     getRounds().then(async (rounds) => {
-      this.rounds = await Promise.all(
+      rounds = await Promise.all(
         rounds.map(async (round) => {
           const roundData = await getRoundDataByAddress(round.id)
           return {
             Ended: new Date(roundData.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(roundData.roundStart * 1000).toLocaleTimeString(),
             Address: '<a href="/#/round/' + round.id + '">' + round.id + '</a>',
             Total: Math.floor(roundData.side1 + roundData.side2),
+            RoundEndTimestamp: roundData.roundEnd,
           }
         })
       )
+      this.rounds = rounds.filter((r) => {
+        return r.RoundEndTimestamp < Date.now()
+      })
     })
   },
   data() {
@@ -44,7 +48,7 @@ export default Vue.extend({
       authTrigger: false,
       rounds: [],
       perPage: 10,
-      currentPage:  1
+      currentPage: 1,
     }
   },
   methods: {},
@@ -60,9 +64,9 @@ export default Vue.extend({
 })
 </script>
 <style>
-.page-link{
-  background-color:  #5d5d61!important;
-  color: white!important;
+.page-link {
+  background-color: #5d5d61 !important;
+  color: white !important;
   cursor: pointer;
 }
 </style>
