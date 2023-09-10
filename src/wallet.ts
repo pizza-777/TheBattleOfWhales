@@ -368,10 +368,10 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
       //subscriber on current round transactions
       ;(await betsSubscriber()).on('data', (data) => {
         vueGlobal.betsSubscriber = data
-        console.log('bet placed', + JSON.stringify(data))
+        console.log('bet placed', JSON.stringify(data))
       })
     })
     .catch((r) => {
-      alert(r)
+      console.log('subscription error', r)
     })
 })()

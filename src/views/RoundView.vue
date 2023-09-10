@@ -11,7 +11,7 @@
         </div>
         <div id="leftFishBtn">
           <b-button id="betBtnLeft" block variant="outline-primary" @click="_bet(1)">Bet</b-button>
-          <b-tooltip target="betBtnLeft" triggers="click">Sent</b-tooltip> 
+          <!-- <b-tooltip target="betBtnLeft" triggers="click">Sent</b-tooltip>  -->
         </div>
         <div id="leftAddr" class="mt-3">
           <b-input-group size="sm">
@@ -31,7 +31,7 @@
         </div>
         <div id="rightFishBtn">
           <b-button id="betBtnRight" variant="outline-primary" @click="_bet(2)">Bet</b-button>
-          <b-tooltip target="betBtnRight">Sent</b-tooltip>
+          <!-- <b-tooltip target="betBtnRight">Sent</b-tooltip> -->
         </div>
         <div id="RightAddr" class="mt-3">
           <b-input-group size="sm">
@@ -225,7 +225,7 @@ export default Vue.extend({
       if (currentTime > this.roundEndTimestamp) {
         this.alertMessage = 'Round finished. New round will start in one minute.'
         this.alert = true
-        if (currentTime > this.roundEndTimestamp + 60 * 1000) {
+        if (currentTime > (this.roundEndTimestamp + 60 * 1000)) {
           this.updateAll()
         }
         return

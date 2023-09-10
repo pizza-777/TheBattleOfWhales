@@ -31,7 +31,7 @@
           <b-form-input v-on:focus="$event.target.select()" ref="claimAddr" class="link-light" v-model="userBetsAddress"> </b-form-input>
           <b-input-group-append>
             <b-button variant="outline-primary" id="copyBtnClaim" @click="_copy()">Copy</b-button>
-            <b-tooltip target="copyBtnClaim">Copied</b-tooltip>
+            <b-tooltip target="copyBtnClaim" triggers="click">Copied</b-tooltip>
           </b-input-group-append>
         </b-input-group>
       </div>

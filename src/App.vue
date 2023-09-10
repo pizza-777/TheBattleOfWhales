@@ -11,7 +11,7 @@
 }
 input {
   background-color:  rgb(93, 93, 97, 0.3) !important;
-  color: white;
+  color: rgba(255,255,255, 0.9) !important;
 }
 #title {
   font-family: Robus;
