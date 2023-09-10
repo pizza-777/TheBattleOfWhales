@@ -4,7 +4,7 @@
     <div class="container mt-4 mb-4">
       <div v-if="rounds.length == 0" class="text-center">No past rounds yet</div>
       <div v-else class="text-center text-light h4">Past rounds</div>
-      <b-table dark striped hover :items="rounds" :per-page="perPage" :current-page="currentPage">
+      <b-table dark striped hover :items="rounds" :fields="fields" :per-page="perPage" :current-page="currentPage">
         <template #cell(Address)="data">
           <span v-html="data.value"></span>
         </template>
@@ -38,14 +38,16 @@ export default Vue.extend({
           }
         })
       )
-      this.rounds = rounds.filter((r) => {
+      rounds = rounds.filter((r) => {
         return r.RoundEndTimestamp < Date.now()
       })
+      this.rounds = rounds.sort((a, b)=> b.RoundEndTimestamp - a.RoundEndTimestamp)  
     })
   },
   data() {
     return {
       authTrigger: false,
+      fields: ['Ended', 'Address', 'Total'],
       rounds: [],
       perPage: 10,
       currentPage: 1,
