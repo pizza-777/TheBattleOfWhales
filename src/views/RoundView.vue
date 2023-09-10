@@ -237,10 +237,6 @@ export default Vue.extend({
 })
 </script> 
 <style scoped>
-input {
-  background-color:  #5d5d61!important;
-  color: white;
-}
 #leftFish {
   transform: scale(-1, 1);
   font-size: 5em;

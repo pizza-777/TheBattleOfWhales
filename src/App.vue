@@ -9,4 +9,11 @@
   src: local("Robus"),
    url(./assets/font/Robus.otf) format("opentype");
 }
+input {
+  background-color:  rgb(93, 93, 97, 0.3) !important;
+  color: white;
+}
+#title {
+  font-family: Robus;
+}
 </style>

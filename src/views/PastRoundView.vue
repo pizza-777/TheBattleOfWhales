@@ -114,13 +114,6 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-input {
-  background-color: #5d5d61 !important;
-  color: white;
-}
-#title {
-  font-family: Robus;
-}
 #leftFish,
 #rightFish {
   font-size: 5em;
