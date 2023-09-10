@@ -12,5 +12,6 @@
 .lgi{
   background-color: black;
   color:white;
+  background-color: rgba(0, 0, 0, 0)
 }
 </style>
