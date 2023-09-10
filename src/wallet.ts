@@ -13,11 +13,6 @@ import { checkAccTypeName } from './sdk'
 
 import Vue from 'vue'
 
-const vueGlobal = Vue.observable({
-  network: '',
-  betsSubscriber: {},
-})
-
 let _ever: ProviderRpcClient
 let _accountInteraction: everWallet | undefined
 
@@ -112,20 +107,6 @@ export async function betsSubscriber() {
   const transactionsSub = await _ever.subscribe('transactionsFound', { address: rAddr })
   return transactionsSub
 }
-
-Object.defineProperty(Vue.prototype, '$betsSubscriber', {
-  get() {
-    return vueGlobal.betsSubscriber
-  },
-
-  set(value) {
-    vueGlobal.betsSubscriber = value
-  },
-})
-;(await betsSubscriber()).on('data', (data) => {
-  vueGlobal.betsSubscriber = data
-  return data
-})
 
 //use https://provider-docs.broxus.com/guides/deploy.html#expected-address-retrieval
 export async function getRoundContractAddress(roundStart: number, roundEnd: number) {
@@ -269,7 +250,7 @@ export async function getUserDataByRound(roundAddress: string) {
 
   try {
     const roundContract = new provider.Contract(RoundContract.abi, new Address(roundAddress))
-   
+
     const userBetsAddress: { value0: Address } = await roundContract.methods.calcBetAddress({ player: accountInteraction.address } as never).call()
 
     const userBetsContract = new provider.Contract(BetContract.abi, new Address(userBetsAddress.value0.toString()))
@@ -320,7 +301,19 @@ export async function claim(addr: Address) {
   }
 }
 
-//watching for network changes and pass them to the Vue app
+export async function getNetwork(): Promise<string | undefined> {
+  const _ever = await ever()
+  if ((await _ever.hasProvider()) == false) return
+  const ps = await _ever.getProviderState()
+  return ps.selectedConnection
+}
+
+//VUE GLOBALS VARIABLES
+const vueGlobal = Vue.observable({
+  network: '',
+  betsSubscriber: {},    
+  permissionsChanged: {},
+})
 
 Object.defineProperty(Vue.prototype, '$network', {
   get() {
@@ -332,15 +325,53 @@ Object.defineProperty(Vue.prototype, '$network', {
   },
 })
 
-// ever().then(async (_ever) => {
-//   (await _ever.subscribe('networkChanged')).on('data', (event: { selectedConnection: any }) => {
-//     vueGlobal.network = event.selectedConnection
-//   })
-// })
+Object.defineProperty(Vue.prototype, '$permissionsChanged', {
+  get() {
+    return vueGlobal.permissionsChanged
+  },
 
-export async function getNetwork(): Promise<string | undefined> {
-  const _ever = await ever()
-  if ((await _ever.hasProvider()) == false) return
-  const ps = await _ever.getProviderState()
-  return ps.selectedConnection
-}
+  set(value) {
+    vueGlobal.permissionsChanged = value
+  },
+})
+
+Object.defineProperty(Vue.prototype, '$betsSubscriber', {
+  get() {
+    return vueGlobal.betsSubscriber
+  },
+
+  set(value) {
+    vueGlobal.betsSubscriber = value
+  },
+})
+
+//subscritions
+;(async () => {
+  const provider = ever()
+  //  if ((await (await provider).hasProvider()) == false) return
+
+  provider
+    .then(async (_ever) => {
+      //network
+      (await _ever.subscribe('networkChanged')).on('data', (event: { selectedConnection: any }) => {
+        vueGlobal.network = event.selectedConnection
+        console.log('network changed')
+      })
+
+      //permissions: first load, login, logout
+      ;(await _ever.subscribe('permissionsChanged')).on('data', (data: { permissions: any }) => {
+        vueGlobal.permissionsChanged = data
+        //alert('permissionsChanged')
+        console.log('permissions changed' + JSON.stringify(data))
+      })
+
+      //subscriber on current round transactions
+      ;(await betsSubscriber()).on('data', (data) => {
+        vueGlobal.betsSubscriber = data
+        console.log('bet placed', + JSON.stringify(data))
+      })
+    })
+    .catch((r) => {
+      alert(r)
+    })
+})()
