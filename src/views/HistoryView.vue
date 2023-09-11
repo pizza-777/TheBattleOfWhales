@@ -1,9 +1,9 @@
 <template>
   <div>
     <div><LoginLogout :authProp="authTrigger" /></div>
-    <div class="container mt-4 mb-4">
-      <div v-if="rounds.length == 0" class="text-center">No past rounds yet</div>
-      <div v-else class="text-center text-light h4">Past rounds</div>
+    <div v-if="rounds.length == 0" class="text-center text-light h4">No past rounds yet</div>
+    <div v-else class="text-center text-light h4">Past rounds</div>
+    <div v-if="rounds.length > 0"  class="container mt-4 mb-4">      
       <b-table style="background-color: rgb(93, 93, 97, 0.2) !important; color: rgba(255,255,255, 0.9) !important; border-radius: 5px;" :items="rounds" :fields="fields" :per-page="perPage" :current-page="currentPage">
         <template #cell(Address)="data">
           <span v-html="data.value"></span>
@@ -38,8 +38,8 @@ export default Vue.extend({
           }
         })
       )
-      rounds = rounds.filter((r) => {
-        return r.RoundEndTimestamp < Date.now()
+      rounds = rounds.filter((r) => {      
+        return (r.RoundEndTimestamp * 1000) < Date.now()
       })
       this.rounds = rounds.sort((a, b)=> b.RoundEndTimestamp - a.RoundEndTimestamp)  
     })
