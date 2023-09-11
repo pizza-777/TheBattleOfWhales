@@ -35,7 +35,7 @@ contract RD {
             });
             roundAddress = new Round{
                 stateInit: stateInit,
-                value: 1e9,
+                value: 1e8,
                 wid: msg.sender.wid,
                 flag: 3
             }();
