@@ -1,6 +1,7 @@
 const path = require('path')
 
-const dir = path.resolve(__dirname)
+//const dir = path.resolve(__dirname)
+const dir = '.'
 
 //cleanup
 // await $`rm -r ${dir}/RoundContract.ts`

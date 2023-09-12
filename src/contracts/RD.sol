@@ -2,7 +2,7 @@ pragma ever-solidity >=0.71.0;
 
 import "./Round.sol";
 
-contract RD {
+contract RD { 
     //static
     TvmCell static roundCode;
     TvmCell static betCode;
@@ -30,21 +30,23 @@ contract RD {
        if (roundAddress != _roundAddress) {
             roundAddress = new Round{
                 stateInit: buildRoundContractInitData(roundStart, roundEnd),
-                value: 1e9,
+                value: 1e9,//credit 1 ever to Round.sol. This value will returned after first bet
                 wid: msg.sender.wid,
                 flag: 0//pay deploying fee from value
             }();
        }
         //flag 1 meaning spend money separately. Msg.value will be stored as a bet value
-        Round(_roundAddress).placeBet{value: msg.value, flag: 1}(
+        //processing fee as 1% of bet value deducted
+        Round(_roundAddress).placeBet{value: msg.value, flag: 0}(
             side,
-            msg.sender
+            msg.sender,
+            msg.value
         );
-    }
+    }    
 
     function roundTime() public pure returns (uint32, uint32) {
         uint32 currTime = block.timestamp;
-        uint32 period = 6 * 60; //* 60; //6 hours
+        uint32 period = 6 * 60; //* 60; //6 min
         uint32 periods = currTime / period;
         uint32 roundStart = periods * period;
         uint32 roundEnd = roundStart + period;
