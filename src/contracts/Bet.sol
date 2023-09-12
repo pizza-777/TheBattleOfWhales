@@ -13,12 +13,15 @@ contract Bet {
 
     bool public claimedReward = false;
 
-    function storeBet(uint128 amount, uint2 side) public {
+       function storeBet(uint128 amount, uint2 side) public {
         require(msg.sender == round, 100, "Wrong sender");
 
         tvm.accept();
         if (side == 1) side1 += amount;
         if (side == 2) side2 += amount;
+
+        //return change
+        round.transfer(0, true, 64);
     }
 
     function claim() public {

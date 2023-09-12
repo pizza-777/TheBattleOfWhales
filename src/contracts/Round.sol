@@ -11,33 +11,18 @@ contract Round {
     uint128 public side1 = 0;
     uint128 public side2 = 0;
 
-    function deployBetContract(address player) public view returns (address) {
-        TvmCell stateInit = tvm.buildStateInit({
-            code: betCode,
-            varInit: {
-                roundStart: roundStart,
-                roundEnd: roundEnd,
-                player: player,
-                round: address(this)
-            },
-            contr: Bet,
-            pubkey: tvm.pubkey()
-        });
+    function deployBetContract(address player) public view returns (address) {       
 
         return
             new Bet{
-                stateInit: stateInit,
-                value: 1e8, //TODO MIN GAS VALUE FOR DEPLOYMENT
+                stateInit: buildBetContractInitData(player),
+                value: 1e8, 
                 wid: 0,
-                flag: 3
+                flag: 0//pay deploying fee from value
             }();
     }
-
-    function calcBetAddress(address player) public view returns (address) {
-        return
-            address(
-                tvm.hash(
-                    tvm.buildStateInit({
+    function buildBetContractInitData(address player) public view returns(TvmCell){
+        return tvm.buildStateInit({
                         code: betCode,
                         varInit: {
                             roundStart: roundStart,
@@ -47,7 +32,13 @@ contract Round {
                         },
                         contr: Bet,
                         pubkey: tvm.pubkey()
-                    })
+                    });
+    }
+    function calcBetAddress(address player) public view returns (address) {
+        return
+            address(
+                tvm.hash(
+                    buildBetContractInitData(player)
                 )
             );
     }
@@ -60,8 +51,18 @@ contract Round {
             102,
             "Wrong time"
         );
+        // I don't know is BetContracts exists or not, then trying to deploying it
         address betAddress = deployBetContract(player);
-        Bet(betAddress).storeBet(msg.value, side);
+
+        //flag 0: pay fee from value because bet value is a msg.value as a param
+        Bet(betAddress).storeBet{value: 1e8, flag: 0}(msg.value, side);
+
+        //if it is the first bet - return 1 ever to RD.sol contract. 
+        // This 1 ever was used for deployment this Round.sol contract
+        if((side1 + side2) == 0){
+            msg.sender.transfer(1e9, true, 1);            
+        }
+
 
         if (side == 1) side1 += msg.value;
         if (side == 2) side2 += msg.value;
@@ -75,8 +76,11 @@ contract Round {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
-        reward -= 1e8; //processing fee
+        //The processing fee is the 1% from returned reward
+        reward = reward - reward/100; 
+        //
         player.transfer(reward, true, 64);
+
     }
 
     function calcReward(

@@ -18,30 +18,28 @@ contract RD {
     function placeBet() public returns (address) {
         require(msg.value >= 1 ever, 100, "Min bet value 1 ever");
         (uint32 roundStart, uint32 roundEnd) = roundTime();
-        require((roundStart+60)<block.timestamp, 101, 'Pause one minute between rounds');
-        tvm.accept();        
-        address _roundAddress = calcRoundAddress(roundStart, roundEnd);        
-		//if round.sol doesn't exists deploy it
-        if (roundAddress != _roundAddress) {
-            TvmCell stateInit = tvm.buildStateInit({
-                code: roundCode,
-                varInit: {
-                    roundStart: roundStart,
-                    roundEnd: roundEnd,
-                    betCode: betCode
-                },
-                contr: Round,
-                pubkey: tvm.pubkey()
-            });
+        require(
+            (roundStart + 60) < block.timestamp,
+            101,
+            "Pause one minute between rounds"
+        );
+        tvm.accept();
+        address _roundAddress = calcRoundAddress(roundStart, roundEnd);
+        //if round.sol doesn't exists deploy it
+        // checking round contract extsts needs for reducing transactions
+       if (roundAddress != _roundAddress) {
             roundAddress = new Round{
-                stateInit: stateInit,
-                value: 1e8,
+                stateInit: buildRoundContractInitData(roundStart, roundEnd),
+                value: 1e9,
                 wid: msg.sender.wid,
-                flag: 3
+                flag: 0//pay deploying fee from value
             }();
-        }
-
-        Round(_roundAddress).placeBet{value: msg.value, flag: 3}(side, msg.sender);
+       }
+        //flag 1 meaning spend money separately. Msg.value will be stored as a bet value
+        Round(_roundAddress).placeBet{value: msg.value, flag: 1}(
+            side,
+            msg.sender
+        );
     }
 
     function roundTime() public pure returns (uint32, uint32) {
@@ -53,24 +51,28 @@ contract RD {
         return (roundStart, roundEnd);
     }
 
+    function buildRoundContractInitData(
+        uint32 roundStart,
+        uint32 roundEnd
+    ) public view returns (TvmCell) {
+        return
+            tvm.buildStateInit({
+                code: roundCode,
+                varInit: {
+                    roundStart: roundStart,
+                    roundEnd: roundEnd,
+                    betCode: betCode
+                },
+                contr: Round,
+                pubkey: tvm.pubkey()
+            });
+    }
+
     function calcRoundAddress(
         uint32 roundStart,
         uint32 roundEnd
     ) public view returns (address) {
         return
-            address(
-                tvm.hash(
-                    tvm.buildStateInit({
-                        code: roundCode,
-                        varInit: {
-                            roundStart: roundStart,
-                            roundEnd: roundEnd,
-                            betCode: betCode
-                        },
-                        contr: Round,
-                        pubkey: tvm.pubkey()
-                    })
-                )
-            );
+            address(tvm.hash(buildRoundContractInitData(roundStart, roundEnd)));
     }
 }
