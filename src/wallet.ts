@@ -137,7 +137,7 @@ export async function getBetContractAddress() {
   const accountInteraction = await everWallet()
   const rt: any = await getRoundTime()
   const roundData = await checkRoundContract(rt.roundStart, rt.roundEnd)
-  if (roundData.acc_type_name == 'Uninit') {
+  if (roundData.acc_type_name == 'NonExist') {
     return null
   }
 
@@ -197,7 +197,8 @@ export async function getBetsData() {
   const roundTime: any = await getRoundTime()
 
   const addressData = await checkRoundContract(roundTime.roundStart, roundTime.roundEnd)
-  if (addressData.acc_type_name == 'Uninit')
+ 
+  if (addressData.acc_type_name == 'NonExist')
     return {
       side1: 0,
       side2: 0,
@@ -220,7 +221,7 @@ export async function getUserBetsData() {
   const auth = await authState()
   if (!auth || typeof auth == 'undefined') return
   const addressData = await checkBetContract()
-  if (addressData.acc_type_name == 'Uninit') {
+  if (addressData.acc_type_name == 'NonExist') {
     return {
       side1: 0,
       side2: 0,

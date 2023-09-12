@@ -31,7 +31,7 @@ export async function checkAccTypeName(addr: string) {
       })
     ).result.data.accounts   
     if (response.length == 0) {
-      return 'Uninit'
+      return 'NonExist'
     }
     return response[0].acc_type_name
   } catch (e) {
