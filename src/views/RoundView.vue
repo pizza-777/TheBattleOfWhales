@@ -113,7 +113,7 @@ export default Vue.extend({
       betBtnDisabled: false,
       leftFishSize: '5em',
       rightFishSize: '5em',
-      currentTime: null,
+      currentTime:  Date.now(),
       progressMax: 100,
       progressValue: 0,
       roundState: '',
@@ -124,6 +124,8 @@ export default Vue.extend({
       if ((await authState()) == false) {
         this.alert = true
         this.alertMessage = 'Connect your wallet'
+        sleep(5000);
+        this.alert = false
         return
       }
       const amount = this['fishInputAmount' + side]
