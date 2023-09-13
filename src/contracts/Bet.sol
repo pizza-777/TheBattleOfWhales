@@ -16,7 +16,7 @@ contract Bet {
 //можно ли передеплоить в один и тот же конструктор
 // деплоить имеет право только кто-то с определенным клчем
     function storeBet(uint128 amount, uint2 side) public {
-        require(msg.sender == round, 100, "Wrong sender");
+        require(msg.sender == round, 101, "Wrong sender");
         tvm.rawReserve(1e7, 2);
         if (side == 1) side1 += amount;
         else side2 += amount;

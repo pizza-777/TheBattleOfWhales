@@ -2,7 +2,7 @@ pragma ever-solidity >=0.71.0;
 
 import "./Round.sol";
 
-contract RD { 
+contract RD {
     //static
     TvmCell static roundCode;
     TvmCell static betCode;
@@ -15,35 +15,40 @@ contract RD {
         placeBet();
     }
 
-    //replenish balance of this contract with this function, 
+    //replenish balance of this contract with this function,
     //because direct payment go to receive and bet
-    function replenish() public{}
+    function replenish() public {}
 
-    function placeBet() public returns (address) {
-        require(msg.value >= 1e9, 100, "Min bet value 1 ever");
+    function placeBet() public  {
+        // require(msg.value >= 1e9, 101, "Min bet value 1 ever"); //todo bounce needed
+        if(msg.value < 1e9) {
+            tvm.rawReserve(address(this).balance,2);
+            msg.sender.transfer({value: msg.value, flag: 0});
+            return;
+        }
         (uint32 roundStart, uint32 roundEnd) = roundTime();
         require(
             (roundStart + 60) < block.timestamp,
             101,
             "Pause one minute between rounds"
         );
-        tvm.rawReserve(1e8, 2);     
-        address _roundAddress = calcRoundAddress(roundStart, roundEnd);        
-       if (roundAddress != _roundAddress) {
+        tvm.rawReserve(1e8, 2);
+        address _roundAddress = calcRoundAddress(roundStart, roundEnd);
+        if (roundAddress != _roundAddress) {
             roundAddress = new Round{
                 stateInit: buildRoundContractInitData(roundStart, roundEnd),
-                value: 1e8,//credit 1 ever to Round.sol. This value will returned after first bet                
-                flag: 0//pay deploying fee from value               
-            }();
-          //  betAttachValue -= 1e8; //repay deployed money spent
-       }     
+                value: 1e8, //credit 1 ever to Round.sol. This value will returned after first bet
+                flag: 0
+            }(); //pay deploying fee from value
+            //  betAttachValue -= 1e8; //repay deployed money spent
+        }
 
         Round(_roundAddress).placeBet{value: 0, flag: 128}(
             side,
             msg.sender,
             msg.value
         );
-    }    
+    }
 
     function roundTime() public pure returns (uint32, uint32) {
         uint32 currTime = block.timestamp;
@@ -64,11 +69,33 @@ contract RD {
                 varInit: {
                     roundStart: roundStart,
                     roundEnd: roundEnd,
-                    betCode: betCode
+                    betCode: betCode,
+                    RD1: buildRDContractInitData(1),
+                    RD2: buildRDContractInitData(2)
                 },
                 contr: Round,
                 pubkey: tvm.pubkey()
             });
+    }
+
+    function buildRDContractInitData(
+        uint2 _side
+    ) public view returns (address) {
+        return
+            address(
+                tvm.hash(
+                    tvm.buildStateInit({
+                        code: tvm.code(),
+                        varInit: {
+                            roundCode: roundCode,
+                            betCode: betCode,
+                            side: _side
+                        },
+                        contr: RD,
+                        pubkey: tvm.pubkey()
+                    })
+                )
+            );
     }
 
     function calcRoundAddress(

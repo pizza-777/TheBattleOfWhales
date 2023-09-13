@@ -119,6 +119,8 @@ export async function getRoundContractAddress(roundStart: number, roundEnd: numb
       betCode: BetContract.code,
       roundStart: Number(roundStart),
       roundEnd: Number(roundEnd),
+      RD1: RD1Address,
+      RD2: RD2Address
     },
   }
 

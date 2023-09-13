@@ -1,7 +1,6 @@
 pragma ever-solidity >=0.71.0;
 
 import "./Bet.sol";
-import "./RD.sol";
 
 contract Round {
     TvmCell static betCode;
@@ -9,11 +8,15 @@ contract Round {
     uint32 public static roundStart;
     uint32 public static roundEnd;
 
+    address public static RD1;
+    address public static RD2;
+
     uint128 public side1 = 0;
     uint128 public side2 = 0;
-//todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
-//можно ли передеплоить в один и тот же конструктор
-// деплоить имеет право только кто-то с определенным клчем
+
+    //todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
+    //можно ли передеплоить в один и тот же конструктор c
+    // деплоить имеет право только кто-то с определенным клчем
 
     function deployBetContract(address player) public view returns (address) {
         return
@@ -46,10 +49,9 @@ contract Round {
     }
 
     function placeBet(uint2 side, address player, uint128 betValue) public {
-        //restrict - only RD.sol can place bet
-      require(msg.pubkey() == tvm.pubkey(), 100, "Only RD.sol alowed");
-        //require(msg.value >= 1e9, 100, "Min bet 1 ever");
         require(side == 1 || side == 2, 101, "Wrong side");
+        address sender = side == 1 ? RD1 : RD2;
+        require(sender == msg.sender, 101, "Onluy RD contract can send");
         require(
             block.timestamp > roundStart && block.timestamp < roundEnd,
             102,
@@ -60,12 +62,6 @@ contract Round {
 
         //flag 0: pay fee from value because bet value is a msg.value as a param
         Bet(betAddress).storeBet{value: 1e8, flag: 0}(betValue, side);
-
-        //if it is the first bet - return 1 ever to RD.sol contract.
-        //1 ever was value for deployment Round.sol. And only used part of them.
-        // if ((side1 + side2) == 0) {
-        //     RD(msg.sender).replenish{value:1e9, flag:1}();
-        // }
 
         if (side == 1) side1 += betValue;
         else side2 += betValue;
@@ -80,10 +76,16 @@ contract Round {
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
         //The processing fee is the 1% from returned reward
-        uint128 processingFee = reward / 100;
+        uint128 processingFee = calcProcessingFee(reward);
         reward = reward - processingFee;
         //todo Where processing fee will go?
         player.transfer(reward, true, 64);
+    }
+
+    //1% or minimal 0.2 ever
+    function calcProcessingFee(uint128 reward) public pure returns (uint128) {
+        uint128 processingFee = reward / 100;
+        return processingFee > 2e8 ? processingFee : 2e8;
     }
 
     function calcReward(
