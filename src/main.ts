@@ -12,7 +12,26 @@ Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 
+//Global registration of base components
 Vue.config.productionTip = false
+const requireComponent = require.context(  
+  './components',  
+  false,  
+  /Base[A-Z]\w+\.(vue|js)$/
+)
+
+requireComponent.keys().forEach(fileName => {
+  // Получение конфигурации компонента
+  const componentConfig = requireComponent(fileName)
+
+  const componentName = fileName.split('/').pop()?.replace(/\.\w+$/, '')
+  if(typeof componentName !== 'undefined')
+  Vue.component(
+    componentName,
+    componentConfig.default || componentConfig
+  )
+})
+  
 
 new Vue({
   router,

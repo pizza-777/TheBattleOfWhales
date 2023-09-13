@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div><LoginLogout :authProp="authTrigger" /></div>
+    <div><BaseAuth :authProp="authTrigger" /></div>
     <div v-if="rounds.length == 0" class="text-center text-light h4">No past rounds yet</div>
     <div v-else class="text-center text-light h4">Past rounds</div>
     <div v-if="rounds.length > 0"  class="container mt-4 mb-4">      
@@ -19,7 +19,6 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import LoginLogout from '@/components/LoginLogout.vue'
 import { getRounds } from '@/sdk'
 import { getRoundDataByAddress } from '@/wallet'
 
@@ -54,9 +53,6 @@ export default Vue.extend({
     }
   },
   methods: {},
-  components: {
-    LoginLogout,
-  },
   watch: {},
   computed: {
     rows() {

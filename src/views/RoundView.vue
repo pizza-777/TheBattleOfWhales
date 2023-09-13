@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div><LoginLogout :authProp="authTrigger" /></div>
-    <h1 id="title" class="mb-3 text-center text-light"><span class="h2">❃</span> THE BATTLE of WHALES <span class="h2">❃</span></h1>
+    <div><BaseAuth :authProp="authTrigger" /></div>
+    <BaseTitle></BaseTitle>    
     <div class="container mt-5 mb-5" id="fishBox">
       <div>
         <div id="leftFish" ref="leftFish">🐋</div>
@@ -78,7 +78,6 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import LoginLogout from '@/components/LoginLogout.vue'
 import { RD1Address, RD2Address } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet.ts'
 import { sleep } from '@/utils'
@@ -222,9 +221,6 @@ export default Vue.extend({
       this.RD2Address = RD2Address
       this.alert = false
     },
-  },
-  components: {
-    LoginLogout,
   },
   watch: {
     $network() {

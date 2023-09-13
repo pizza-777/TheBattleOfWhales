@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div><LoginLogout :authProp="authTrigger" /></div>
-    <h1 class="mb-3 text-center text-light" id="title">THE BATTLE of WHALES</h1>
+    <div><BaseAuth :authProp="authTrigger" /></div>
+    <BaseTitle></BaseTitle>
     <div class="container mt-5" id="fishBox">
       <div>
         <div id="leftFish">🐋</div>
@@ -49,7 +49,6 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import LoginLogout from '@/components/LoginLogout.vue'
 import { getRoundDataByAddress, claim, getUserDataByRound } from '@/wallet.ts'
 import { calcUserReward, sleep } from '@/utils'
 
@@ -97,7 +96,7 @@ export default Vue.extend({
   methods: {
     async _claim() {
       await claim(this.userBetsAddress)
-      this.claimDisabled = true
+      this.claimedReward = true
     },
     async _copy() {
       this.$refs.claimAddr.focus()
@@ -105,9 +104,6 @@ export default Vue.extend({
       await sleep(1000)
       this.$root.$emit('bv::hide::tooltip', 'copyBtnClaim')
     },
-  },
-  components: {
-    LoginLogout,
   },
   watch: {},
 })
