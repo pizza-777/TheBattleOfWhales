@@ -12,9 +12,10 @@ contract Bet {
     address public static round;
 
     bool public claimedReward = false;
-//todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
-//можно ли передеплоить в один и тот же конструктор
-// деплоить имеет право только кто-то с определенным клчем
+
+    //todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
+    //можно ли передеплоить в один и тот же конструктор
+    // деплоить имеет право только кто-то с определенным клчем
     function storeBet(uint128 amount, uint2 side) public {
         require(msg.sender == round, 101, "Wrong sender");
         tvm.rawReserve(1e7, 2);
@@ -26,7 +27,11 @@ contract Bet {
     }
 
     function claim() public {
-        require(msg.value >= 1e8, 101, "Small attached amount");
+        //return small amount to sender      I
+        if (msg.value < 1e9) {
+            msg.sender.transfer({value: 0, flag: 64});
+            return;
+        }
         require(block.timestamp > roundEnd, 102, "Too early request");
         require(
             claimedReward == false,
@@ -35,11 +40,7 @@ contract Bet {
         );
         tvm.rawReserve(1e7, 2);
         claimedReward = true;
-        Round(round).claimReward{value: 0, flag: 128}(
-            player,
-            side1,
-            side2
-        );
+        Round(round).claimReward{value: 0, flag: 128}(player, side1, side2);
     }
 
     function getBetsData()

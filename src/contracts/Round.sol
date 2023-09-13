@@ -79,7 +79,7 @@ contract Round {
         uint128 processingFee = calcProcessingFee(reward);
         reward = reward - processingFee;
         //todo Where processing fee will go?
-        player.transfer(reward, true, 64);
+        player.transfer({value: reward, flag: 64});
     }
 
     //1% or minimal 0.2 ever
