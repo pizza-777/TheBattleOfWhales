@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "d": "zx src/contracts/wrc.mjs && zx src/contracts/run.mjs",
-    "serve": "vue-cli-service serve",
+    "d": "cd ./src/contracts \n zx ./wrc.mjs \n zx ./run.mjs",
+    "s": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },

@@ -1,6 +1,7 @@
 pragma ever-solidity >=0.71.0;
 
 import "./Bet.sol";
+import "./RD.sol";
 
 contract Round {
     TvmCell static betCode;
@@ -10,42 +11,44 @@ contract Round {
 
     uint128 public side1 = 0;
     uint128 public side2 = 0;
+//todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
+//можно ли передеплоить в один и тот же конструктор
+// деплоить имеет право только кто-то с определенным клчем
 
-    function deployBetContract(address player) public view returns (address) {       
-
+    function deployBetContract(address player) public view returns (address) {
         return
             new Bet{
                 stateInit: buildBetContractInitData(player),
-                value: 1e8, 
-                wid: 0,
-                flag: 0//pay deploying fee from value
-            }();
+                value: 1e8,
+                flag: 0
+            }(); //pay deploying fee from value
     }
-    function buildBetContractInitData(address player) public view returns(TvmCell){
-        return tvm.buildStateInit({
-                        code: betCode,
-                        varInit: {
-                            roundStart: roundStart,
-                            roundEnd: roundEnd,
-                            player: player,
-                            round: address(this)
-                        },
-                        contr: Bet,
-                        pubkey: tvm.pubkey()
-                    });
-    }
-    function calcBetAddress(address player) public view returns (address) {
+
+    function buildBetContractInitData(
+        address player
+    ) public view returns (TvmCell) {
         return
-            address(
-                tvm.hash(
-                    buildBetContractInitData(player)
-                )
-            );
+            tvm.buildStateInit({
+                code: betCode,
+                varInit: {
+                    roundStart: roundStart,
+                    roundEnd: roundEnd,
+                    player: player,
+                    round: address(this)
+                },
+                contr: Bet,
+                pubkey: tvm.pubkey()
+            });
+    }
+
+    function calcBetAddress(address player) public view returns (address) {
+        return address(tvm.hash(buildBetContractInitData(player)));
     }
 
     function placeBet(uint2 side, address player, uint128 betValue) public {
-        //todo restrict - only RD.sol can place bet
-        require(msg.value >= 1e9, 100, "Min bet 1 ever");
+        //restrict - only RD.sol can place bet
+      require(msg.pubkey() == tvm.pubkey(), 100, "Only RD.sol alowed");
+        //require(msg.value >= 1e9, 100, "Min bet 1 ever");
         require(side == 1 || side == 2, 101, "Wrong side");
         require(
             block.timestamp > roundStart && block.timestamp < roundEnd,
@@ -58,15 +61,15 @@ contract Round {
         //flag 0: pay fee from value because bet value is a msg.value as a param
         Bet(betAddress).storeBet{value: 1e8, flag: 0}(betValue, side);
 
-        //if it is the first bet - return 1 ever to RD.sol contract. 
-        //1 ever was value for deployment Round.sol. And only used part of them.        
-        if((side1 + side2) == 0){
-            msg.sender.transfer(1e9, true, 1);            
-        }
+        //if it is the first bet - return 1 ever to RD.sol contract.
+        //1 ever was value for deployment Round.sol. And only used part of them.
+        // if ((side1 + side2) == 0) {
+        //     RD(msg.sender).replenish{value:1e9, flag:1}();
+        // }
 
-        if (side == 1) side1 += msg.value;
-        if (side == 2) side2 += msg.value;        
-    }   
+        if (side == 1) side1 += betValue;
+        else side2 += betValue;
+    }
 
     function claimReward(
         address player,
@@ -77,10 +80,10 @@ contract Round {
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
         //The processing fee is the 1% from returned reward
-        uint128 processingFee = reward/100;
+        uint128 processingFee = reward / 100;
         reward = reward - processingFee;
         //todo Where processing fee will go?
-        player.transfer(reward, true, 64);        
+        player.transfer(reward, true, 64);
     }
 
     function calcReward(

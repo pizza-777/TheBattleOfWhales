@@ -15,29 +15,30 @@ contract RD {
         placeBet();
     }
 
+    //replenish balance of this contract with this function, 
+    //because direct payment go to receive and bet
+    function replenish() public{}
+
     function placeBet() public returns (address) {
-        require(msg.value >= 1 ever, 100, "Min bet value 1 ever");
+        require(msg.value >= 1e9, 100, "Min bet value 1 ever");
         (uint32 roundStart, uint32 roundEnd) = roundTime();
         require(
             (roundStart + 60) < block.timestamp,
             101,
             "Pause one minute between rounds"
         );
-        tvm.accept();
-        address _roundAddress = calcRoundAddress(roundStart, roundEnd);
-        //if round.sol doesn't exists deploy it
-        // checking round contract extsts needs for reducing transactions
+        tvm.rawReserve(1e8, 2);     
+        address _roundAddress = calcRoundAddress(roundStart, roundEnd);        
        if (roundAddress != _roundAddress) {
             roundAddress = new Round{
                 stateInit: buildRoundContractInitData(roundStart, roundEnd),
-                value: 1e9,//credit 1 ever to Round.sol. This value will returned after first bet
-                wid: msg.sender.wid,
-                flag: 0//pay deploying fee from value
+                value: 1e8,//credit 1 ever to Round.sol. This value will returned after first bet                
+                flag: 0//pay deploying fee from value               
             }();
-       }
-        //flag 1 meaning spend money separately. Msg.value will be stored as a bet value
-        //processing fee as 1% of bet value deducted
-        Round(_roundAddress).placeBet{value: msg.value, flag: 0}(
+          //  betAttachValue -= 1e8; //repay deployed money spent
+       }     
+
+        Round(_roundAddress).placeBet{value: 0, flag: 128}(
             side,
             msg.sender,
             msg.value
