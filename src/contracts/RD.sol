@@ -20,10 +20,9 @@ contract RD {
     function replenish() public {}
 
     function placeBet() public  {
-        // require(msg.value >= 1e9, 101, "Min bet value 1 ever"); //todo bounce needed
-        if(msg.value < 1e9) {
-            tvm.rawReserve(address(this).balance,2);
-            msg.sender.transfer({value: msg.value, flag: 0});
+        //return small amount to sender        
+        if(msg.value < 1e9){           
+            msg.sender.transfer({value: 0, flag: 64});            
             return;
         }
         (uint32 roundStart, uint32 roundEnd) = roundTime();
