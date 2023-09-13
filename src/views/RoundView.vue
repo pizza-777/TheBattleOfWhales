@@ -1,7 +1,7 @@
 <template>
   <div>
     <div><BaseAuth :authProp="authTrigger" /></div>
-    <BaseTitle></BaseTitle>    
+    <BaseTitle></BaseTitle>
     <div class="container mt-5 mb-5" id="fishBox">
       <div>
         <div id="leftFish" ref="leftFish">🐋</div>
@@ -18,7 +18,9 @@
             <b-form-input v-on:focus="$event.target.select()" ref="leftAddr" class="link-light" v-model="RD1Address"> </b-form-input>
             <b-input-group-append>
               <b-button variant="outline-primary" id="copyBtnLeft" @click="_copy(1)">Copy</b-button>
-              <b-tooltip target="copyBtnLeft" triggers="click">Copied</b-tooltip>
+              <b-tooltip variant="dark" target="copyBtnLeft" triggers="click">Copied</b-tooltip>
+              <b-icon icon="question-circle" id="leftBetTip" variant="light" aria-label="Help"></b-icon>
+              <b-tooltip target="leftBetTip" variant="dark">Direct bet — send to this address. Min amount 1 Ever.</b-tooltip>
             </b-input-group-append>
           </b-input-group>
         </div>
@@ -38,7 +40,9 @@
             <b-form-input v-on:focus="$event.target.select()" ref="rightAddr" class="link-light" v-model="RD2Address"> </b-form-input>
             <b-input-group-append>
               <b-button variant="outline-primary" id="copyBtnRight" @click="_copy(2)">Copy</b-button>
-              <b-tooltip target="copyBtnRight">Copied</b-tooltip>
+              <b-tooltip target="copyBtnRight" variant="dark">Copied</b-tooltip>
+              <b-icon icon="question-circle" id="rightBetTip" variant="light" aria-label="Help"></b-icon>
+              <b-tooltip target="rightBetTip" variant="dark">Direct bet — send to this address. Min amount 1 Ever.</b-tooltip>
             </b-input-group-append>
           </b-input-group>
         </div>
@@ -49,7 +53,7 @@
       <b-progress :value="progressValue" height="0.2rem" variant="secondary" :max="progressMax" :show-value="false"></b-progress>
     </div>
 
-    <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} --- {{ roundEnd }}</div>
+    <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} — {{ roundEnd }}</div>
     <div class="container text-center mt-4">
       <b-alert mt-4 mb-4 :show="alert">{{ alertMessage }}</b-alert>
     </div>
@@ -112,7 +116,7 @@ export default Vue.extend({
       betBtnDisabled: false,
       leftFishSize: '5em',
       rightFishSize: '5em',
-      currentTime:  Date.now(),
+      currentTime: Date.now(),
       progressMax: 100,
       progressValue: 0,
       roundState: '',
@@ -123,7 +127,7 @@ export default Vue.extend({
       if ((await authState()) == false) {
         this.alert = true
         this.alertMessage = 'Connect your wallet'
-        sleep(5000);
+        sleep(5000)
         this.alert = false
         return
       }
@@ -232,10 +236,10 @@ export default Vue.extend({
     currentTime(_, currentTime) {
       //wait minute and update all
       if (currentTime > this.roundEndTimestamp) {
-        if (currentTime > (this.roundEndTimestamp + 60 * 1000)) {
+        if (currentTime > this.roundEndTimestamp + 60 * 1000) {
           this.updateAll()
         }
-        this.progressValue = 100;
+        this.progressValue = 100
         this.updateRoundState()
         return
       }
@@ -278,4 +282,8 @@ export default Vue.extend({
   bottom: 0;
   width: 100%;
 }
+#leftBetTip, #rightBetTip {
+  margin-left: 0.5em;
+}
+
 </style>

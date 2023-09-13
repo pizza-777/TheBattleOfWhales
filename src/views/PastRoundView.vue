@@ -12,7 +12,7 @@
         <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
       </div>
     </div>
-    <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} --- {{ roundEnd }}</div>
+    <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} — {{ roundEnd }}</div>
     <div v-if="userBox">
       <div class="text-center text-light mt-4 h5">My bets:</div>
       <div id="userAmountBox">
@@ -28,12 +28,17 @@
       </div>
       <div id="claimAddr" v-show="!claimDisabled" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
         <b-input-group size="sm">
+          <!-- <b-input-group-prepend>
+            
+          </b-input-group-prepend> -->
           <b-form-input v-on:focus="$event.target.select()" ref="claimAddr" class="link-light" v-model="userBetsAddress"> </b-form-input>
           <b-input-group-append>
-            <b-button variant="outline-primary" id="copyBtnClaim" @click="_copy()">Copy</b-button>
-            <b-tooltip target="copyBtnClaim" triggers="click">Copied</b-tooltip>
+            <b-button variant="outline-primary" id="copyBtnClaim" @click="_copy()"> Copy </b-button>
+            <b-icon icon="question-circle" id="claimTip" aria-label="Help"></b-icon>            
+            <b-tooltip target="claimTip" variant="dark">Direct claim — send 0.1 Ever to this address"</b-tooltip>
+            <b-tooltip target="copyBtnClaim" variant="dark" triggers="click">Copied</b-tooltip>
           </b-input-group-append>
-        </b-input-group>
+        </b-input-group>        
       </div>
     </div>
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
@@ -121,5 +126,8 @@ export default Vue.extend({
 #userAmountBox {
   display: flex;
   justify-content: space-around;
+}
+#claimTip{
+  margin-left: 0.5em;
 }
 </style>
