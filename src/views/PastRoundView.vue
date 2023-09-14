@@ -128,4 +128,8 @@ export default Vue.extend({
 #claimTip {
   margin-left: 0.5em;
 }
+#copyBtnClaim {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
 </style>

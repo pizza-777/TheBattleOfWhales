@@ -282,8 +282,14 @@ export default Vue.extend({
   bottom: 0;
   width: 100%;
 }
-#leftBetTip, #rightBetTip {
+#leftBetTip,
+#rightBetTip {
   margin-left: 0.5em;
 }
 
+#copyBtnLeft,
+#copyBtnRight {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
 </style>
