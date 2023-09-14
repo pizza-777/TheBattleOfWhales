@@ -40,7 +40,7 @@
             <b-form-input v-on:focus="$event.target.select()" ref="rightAddr" class="link-light" v-model="RD2Address"> </b-form-input>
             <b-input-group-append>
               <b-button variant="outline-primary" id="copyBtnRight" @click="_copy(2)">Copy</b-button>
-              <b-tooltip target="copyBtnRight" variant="dark">Copied</b-tooltip>
+              <b-tooltip target="copyBtnRight" variant="dark" triggers="click">Copied</b-tooltip>
               <b-icon icon="question-circle" id="rightBetTip" variant="light" aria-label="Help"></b-icon>
               <b-tooltip target="rightBetTip" variant="dark">Direct bet — send to this address. Min amount 1 Ever.</b-tooltip>
             </b-input-group-append>
