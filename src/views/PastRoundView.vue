@@ -63,8 +63,7 @@ export default Vue.extend({
     this.roundEnd = new Date(data.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(data.roundEnd * 1000).toLocaleTimeString()
     this.totalAmountSide1 = data.side1
     this.totalAmountSide2 = data.side2
-    getUserDataByRound(this.roundContractAddress).then((data) => {
-      console.log('data', data)
+    getUserDataByRound(this.roundContractAddress).then((data) => {    
       if (typeof data == 'undefined') return
       this.userAmountSide1 = Math.round(data.side1 / 1e9)
       this.userAmountSide2 = Math.round(data.side2 / 1e9)

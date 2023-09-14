@@ -14,17 +14,16 @@ contract Round {
     uint128 public side1 = 0;
     uint128 public side2 = 0;
 
-    uint public cIn = 0;
-    uint public c = 0;
+    constructor() {
+        require(
+            msg.sender == RD1 || msg.sender == RD2,
+            101,
+            "Only Round Deployer can deploy this contract"
+        );
+        tvm.accept();
+    }
 
-    //todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
-    //можно ли передеплоить в один и тот же конструктор c
-    // деплоить имеет право только кто-то с определенным клчем
-
-    receive() external {
-        c++;
-        // if (msg.body.empty()) {
-        //     cIn++;
+    receive() external {      
         if (msg.value >= 1e8 || block.timestamp > roundEnd) {
             address betAddress = calcBetAddress(msg.sender);
 
@@ -40,7 +39,7 @@ contract Round {
                 stateInit: buildBetContractInitData(player),
                 value: 1e8,
                 flag: 0
-            }(); //pay deploying fee from value
+            }();
     }
 
     function buildBetContractInitData(
@@ -86,22 +85,25 @@ contract Round {
     function claimReward(
         address player,
         uint128 amountOnSide1,
-        uint128 amountOnSide2
+        uint128 amountOnSide2,
+        uint32 count
     ) public view {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
         //The processing fee is the 1% from returned reward
-        uint128 processingFee = calcProcessingFee(reward);
+        uint128 processingFee = calcProcessingFee(reward, count);
         reward = reward - processingFee;
         //todo Where processing fee will go?
         player.transfer({value: reward, flag: 64});
     }
 
     //1% or minimal 0.2 ever
-    function calcProcessingFee(uint128 reward) public pure returns (uint128) {
-        uint128 processingFee = reward / 100;
-        return processingFee > 2e8 ? processingFee : 2e8;
+    function calcProcessingFee(uint128 reward, uint32 count) public pure returns (uint128) {
+        uint128 developersFee = reward / 1;
+        uint128 transactionsFee = count * 1e8;
+        uint128 processingFee = developersFee + transactionsFee; 
+        return processingFee;
     }
 
     function calcReward(

@@ -12,13 +12,19 @@ contract Bet {
     address public static round;
 
     bool public claimedReward = false;
+    uint32 public count = 0; // quantitiy of bets
 
     //todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
     //можно ли передеплоить в один и тот же конструктор
     // деплоить имеет право только кто-то с определенным клчем
+    constructor() {
+         require(msg.sender == round, 101, "Only round can deploy this contract");
+         tvm.accept();
+    }
     function storeBet(uint128 amount, uint2 side) public {
-        require(msg.sender == round, 101, "Wrong sender");
+        require(msg.sender == round, 102, "Wrong sender");
         tvm.rawReserve(1e7, 2);
+        count++;
         if (side == 1) side1 += amount;
         else side2 += amount;
 
@@ -27,21 +33,10 @@ contract Bet {
     }
 
     function claim() public {
-        require(msg.sender == round, 101, "Wrong sender");
-        //return small amount to sender      I
-        // if (msg.value < 1e8) {
-        //     player.transfer({value: 0, flag: 64});
-        //     return;
-        // }
-        // require(block.timestamp > roundEnd, 102, "Too early request");
-        // require(
-        //     claimedReward == false,
-        //     103,
-        //     "The reward has been already claimed"
-        // );
+        require(msg.sender == round, 103, "Wrong sender");        
         tvm.rawReserve(1e7, 2);
         claimedReward = true;
-        Round(round).claimReward{value: 0, flag: 128}(player, side1, side2);
+        Round(round).claimReward{value: 0, flag: 128}(player, side1, side2, count);
     }
 
     function getBetsData()
@@ -50,10 +45,5 @@ contract Bet {
         returns (uint128, uint128, bool, uint32, uint32)
     {
         return (side1, side2, claimedReward, roundStart, roundEnd);
-    }
-
-    //claim reward directly
-    receive() external {
-        claim();
-    }
+    }    
 }
