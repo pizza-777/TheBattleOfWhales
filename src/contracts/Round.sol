@@ -92,18 +92,15 @@ contract Round {
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
         //The processing fee is the 1% from returned reward
-        uint128 processingFee = calcProcessingFee(reward, count);
+        uint128 processingFee = calcProcessingFee(count);
         reward = reward - processingFee;
         //todo Where processing fee will go?
         player.transfer({value: reward, flag: 64});
     }
 
     //1% or minimal 0.2 ever
-    function calcProcessingFee(uint128 reward, uint32 count) public pure returns (uint128) {
-        uint128 developersFee = reward / 1;
-        uint128 transactionsFee = count * 1e8;
-        uint128 processingFee = developersFee + transactionsFee; 
-        return processingFee;
+    function calcProcessingFee(uint32 count) public pure returns (uint128) {        
+        return count * 5e8;
     }
 
     function calcReward(
