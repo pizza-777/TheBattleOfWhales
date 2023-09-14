@@ -268,7 +268,7 @@ export async function getUserDataByRound(roundAddress: string) {
       roundEnd: userBetsData.value4,
     }
   } catch (e) {
-    console.error('getUserDataByRound error:' + JSON.stringify(e))
+    console.warn('getUserDataByRound error:' + JSON.stringify(e))
   }
 }
 //total bets

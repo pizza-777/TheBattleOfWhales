@@ -27,17 +27,18 @@ contract Bet {
     }
 
     function claim() public {
+        require(msg.sender == round, 101, "Wrong sender");
         //return small amount to sender      I
-        if (msg.value < 1e9) {
-            msg.sender.transfer({value: 0, flag: 64});
-            return;
-        }
-        require(block.timestamp > roundEnd, 102, "Too early request");
-        require(
-            claimedReward == false,
-            103,
-            "The reward has been already claimed"
-        );
+        // if (msg.value < 1e8) {
+        //     player.transfer({value: 0, flag: 64});
+        //     return;
+        // }
+        // require(block.timestamp > roundEnd, 102, "Too early request");
+        // require(
+        //     claimedReward == false,
+        //     103,
+        //     "The reward has been already claimed"
+        // );
         tvm.rawReserve(1e7, 2);
         claimedReward = true;
         Round(round).claimReward{value: 0, flag: 128}(player, side1, side2);

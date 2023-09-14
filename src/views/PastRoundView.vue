@@ -27,10 +27,7 @@
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
       </div>
       <div id="claimAddr" v-show="!claimDisabled" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
-        <b-input-group size="sm">
-          <!-- <b-input-group-prepend>
-            
-          </b-input-group-prepend> -->
+        <b-input-group size="sm">      
           <b-form-input v-on:focus="$event.target.select()" ref="claimAddr" class="link-light" v-model="userBetsAddress"> </b-form-input>
           <b-input-group-append>
             <b-button variant="outline-primary" id="copyBtnClaim" @click="_copy()"> Copy </b-button>
@@ -67,6 +64,7 @@ export default Vue.extend({
     this.totalAmountSide1 = data.side1
     this.totalAmountSide2 = data.side2
     getUserDataByRound(this.roundContractAddress).then((data) => {
+      console.log('data', data)
       if (typeof data == 'undefined') return
       this.userAmountSide1 = Math.round(data.side1 / 1e9)
       this.userAmountSide2 = Math.round(data.side2 / 1e9)

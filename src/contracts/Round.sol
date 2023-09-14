@@ -14,9 +14,25 @@ contract Round {
     uint128 public side1 = 0;
     uint128 public side2 = 0;
 
+    uint public cIn = 0;
+    uint public c = 0;
+
     //todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
     //можно ли передеплоить в один и тот же конструктор c
     // деплоить имеет право только кто-то с определенным клчем
+
+    receive() external {
+        c++;
+        // if (msg.body.empty()) {
+        //     cIn++;
+        if (msg.value >= 1e8 || block.timestamp > roundEnd) {
+            address betAddress = calcBetAddress(msg.sender);
+
+            Bet(betAddress).claim{value: 0, flag: 64}();
+        }
+    }
+
+    function replenish() public {}
 
     function deployBetContract(address player) public view returns (address) {
         return
