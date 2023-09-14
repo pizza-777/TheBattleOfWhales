@@ -20,22 +20,22 @@
         <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide2 }} Ever</div>
       </div>
     </div>
-    <div id="userReward" v-if="userBox" class="container text-center text-light mt-4 mb-4">
+    <div id="userReward" class="container text-center text-light mt-4 mb-4">
       <div v-if="userReward !== null && userReward > 0">
         <span class="p-3">Reward: {{ userReward }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
       </div>
-      <div id="claimAddr" v-show="!claimDisabled" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
-        <b-input-group size="sm">      
-          <b-form-input v-on:focus="$event.target.select()" ref="claimAddr" class="link-light" v-model="userBetsAddress"> </b-form-input>
+      <div id="claimAddr" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
+        <b-input-group size="sm">
+          <b-form-input v-on:focus="$event.target.select()" ref="claimAddr" class="link-light" v-model="roundContractAddress"> </b-form-input>
           <b-input-group-append>
             <b-button variant="outline-primary" id="copyBtnClaim" @click="_copy()"> Copy </b-button>
-            <b-icon icon="question-circle" id="claimTip" aria-label="Help"></b-icon>            
-            <b-tooltip target="claimTip" variant="dark">Direct claim — send 0.1 Ever to this address"</b-tooltip>
+            <b-icon icon="question-circle" id="claimTip" aria-label="Help"></b-icon>
+            <b-tooltip target="claimTip" variant="dark">Direct claim — send 0.1 Ever to this address</b-tooltip>
             <b-tooltip target="copyBtnClaim" variant="dark" triggers="click">Copied</b-tooltip>
           </b-input-group-append>
-        </b-input-group>        
+        </b-input-group>
       </div>
     </div>
     <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
@@ -98,8 +98,8 @@ export default Vue.extend({
   },
   methods: {
     async _claim() {
-      await claim(this.userBetsAddress)
-      this.claimedReward = true
+      const response = await claim(this.roundContractAddress)
+      if (typeof response !== 'undefined') this.claimedReward = true
     },
     async _copy() {
       this.$refs.claimAddr.focus()
@@ -125,7 +125,7 @@ export default Vue.extend({
   display: flex;
   justify-content: space-around;
 }
-#claimTip{
+#claimTip {
   margin-left: 0.5em;
 }
 </style>

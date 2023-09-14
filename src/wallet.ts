@@ -292,11 +292,12 @@ export async function getRoundDataByAddress(address: string) {
 export async function claim(addr: Address) {
   const everProvider = await ever()
   const accountInteraction = await everWallet()
-  const bet = new everProvider.Contract(BetContract.abi, addr)
+  const round = new everProvider.Contract(RoundContract.abi, addr)
   try {
-    await bet.methods.claim({} as never).send({
-      from: accountInteraction.address,
-      amount: String(1e8),
+    return await everProvider.sendMessage({
+      sender: accountInteraction.address,
+      recipient: round.address,
+      amount:String(1e8),
       bounce: true,
     })
   } catch (e) {
