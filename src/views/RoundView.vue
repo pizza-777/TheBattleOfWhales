@@ -9,7 +9,7 @@
         <div id="leftFishInputAmount">
           <b-form-input block v-model="fishInputAmount1" placeholder="0 EVER"></b-form-input>
         </div>
-        <div id="leftFishBtn">
+        <div id="leftFishBtn" v-if="userBox">
           <b-button id="betBtnLeft" block variant="outline-primary" @click="_bet(1)">Bet</b-button>
           <!-- <b-tooltip target="betBtnLeft" triggers="click">Sent</b-tooltip>  -->
         </div>
@@ -31,7 +31,7 @@
         <div id="leftFishInputAmount">
           <b-form-input v-model="fishInputAmount2" placeholder="0 EVER"></b-form-input>
         </div>
-        <div id="rightFishBtn">
+        <div id="rightFishBtn" v-if="userBox">
           <b-button id="betBtnRight" variant="outline-primary" @click="_bet(2)">Bet</b-button>
           <!-- <b-tooltip target="betBtnRight">Sent</b-tooltip> -->
         </div>
