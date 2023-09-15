@@ -13,10 +13,7 @@ contract Bet {
 
     bool public claimedReward = false;
     uint32 public count = 0; // quantitiy of bets
-
-    //todo deploy constructor https://github.com/tonlabs/samples/blob/master/solidity/17_SimpleWallet.sol#L23
-    //можно ли передеплоить в один и тот же конструктор
-    // деплоить имеет право только кто-то с определенным клчем
+   
     constructor() {
          require(msg.sender == round, 101, "Only round can deploy this contract");
          tvm.accept();
@@ -28,7 +25,6 @@ contract Bet {
         if (side == 1) side1 += amount;
         else side2 += amount;
 
-        //return change
         round.transfer({value: 0, flag: 128});
     }
 

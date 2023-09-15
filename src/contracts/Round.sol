@@ -14,6 +14,8 @@ contract Round {
     uint128 public side1 = 0;
     uint128 public side2 = 0;
 
+    address static public happyDev;
+
     constructor() {
         require(
             msg.sender == RD1 || msg.sender == RD2,
@@ -23,7 +25,7 @@ contract Round {
         tvm.accept();
     }
 
-    receive() external {      
+    receive() external {
         if (msg.value >= 1e8 || block.timestamp > roundEnd) {
             address betAddress = calcBetAddress(msg.sender);
 
@@ -66,7 +68,7 @@ contract Round {
     function placeBet(uint2 side, address player, uint128 betValue) public {
         require(side == 1 || side == 2, 101, "Wrong side");
         address sender = side == 1 ? RD1 : RD2;
-        require(sender == msg.sender, 101, "Onluy RD contract can send");
+        require(sender == msg.sender, 101, "Only RD contract can send");
         require(
             block.timestamp > roundStart && block.timestamp < roundEnd,
             102,
@@ -91,15 +93,16 @@ contract Round {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
-        //The processing fee is the 1% from returned reward
+        
         uint128 processingFee = calcProcessingFee(count);
         reward = reward - processingFee;
         //todo Where processing fee will go?
-        player.transfer({value: reward, flag: 64});
+        player.transfer({value: reward, flag: 64});   
+        happyDev.transfer({value:1e8, flag:0});     
     }
 
     //1% or minimal 0.2 ever
-    function calcProcessingFee(uint32 count) public pure returns (uint128) {        
+    function calcProcessingFee(uint32 count) public pure returns (uint128) {
         return count * 5e8;
     }
 
