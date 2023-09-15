@@ -85,6 +85,7 @@ import Vue from 'vue'
 import { RD1Address, RD2Address } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet.ts'
 import { sleep } from '@/utils'
+import {roundDuration} from '@/config'
 
 export default Vue.extend({
   name: 'HomeView',
@@ -244,7 +245,7 @@ export default Vue.extend({
         return
       }
       this.updateRoundState()
-      this.progressValue = 100 - ((this.roundEndTimestamp - currentTime) / 1000 / 60 / 5) * 100 // todo change interval value
+      this.progressValue = 100 - ((this.roundEndTimestamp - currentTime) / 1000 / (roundDuration-60)) * 100 // todo change interval value
     },
   },
 })

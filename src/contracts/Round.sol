@@ -14,7 +14,7 @@ contract Round {
     uint128 public side1 = 0;
     uint128 public side2 = 0;
 
-    address static public happyDev;
+   // address static public happyDev;
 
     constructor() {
         require(
@@ -98,7 +98,7 @@ contract Round {
         reward = reward - processingFee;
         //todo Where processing fee will go?
         player.transfer({value: reward, flag: 64});   
-        happyDev.transfer({value:1e8, flag:0});     
+       // happyDev.transfer({value:1e8, flag:0});     
     }
 
     //1% or minimal 0.2 ever
