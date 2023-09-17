@@ -21,11 +21,11 @@
       </div>
     </div>
     <div id="userReward" class="container text-center text-light mt-4 mb-4">
-      <div v-if="userReward !== null && userReward > 0">       
+      <div v-if="userReward !== null && userReward > 0">
         <span class="p-3">Reward: {{ userReward }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
-         <b-icon icon="question-circle" id="rewardTip" aria-label="Help"></b-icon>
+        <b-icon icon="question-circle" id="rewardTip" aria-label="Help"></b-icon>
         <b-tooltip target="rewardTip" variant="dark">Estimated reward fee is approximatelly 0.5 Ever per bet</b-tooltip>
       </div>
       <div id="claimAddr" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
@@ -40,15 +40,10 @@
         </b-input-group>
       </div>
     </div>
-    <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
-      <a href="./#/history" class="link-light"><b>Past rounds</b></a>
-    </div>
-    <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
-      <a href="./#/" class="link-light"><b>Current round</b></a>
-    </div>
     <div class="container text-center light text-light mt-4">
       Contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
+     <BaseFooter></BaseFooter>
   </div>
 </template>
 <script lang="ts">
@@ -57,7 +52,7 @@ import { getRoundDataByAddress, claim, getUserDataByRound } from '@/wallet.ts'
 import { calcUserReward, sleep } from '@/utils'
 
 export default Vue.extend({
-  name: 'HomeView',
+  name: 'PastRoundView',
   async mounted() {
     this.roundContractAddress = this.$route.params.roundAddress
     const data = await getRoundDataByAddress(this.roundContractAddress)
@@ -126,7 +121,8 @@ export default Vue.extend({
   display: flex;
   justify-content: space-around;
 }
-#claimTip, #rewardTip {
+#claimTip,
+#rewardTip {
   margin-left: 0.5em;
 }
 #copyBtnClaim {

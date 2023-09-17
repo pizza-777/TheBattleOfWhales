@@ -4,6 +4,7 @@ import RoundView from '../views/RoundView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import PastRoundView from '../views/PastRoundView.vue'
 import RulesView from '../views/RulesView.vue'
+import PoolView from '../views/PoolView.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes: Array<RouteConfig> = [
     path: '/rules',
     name: 'Rules',
     component: RulesView
+  },
+  {
+    path: '/pool',
+    name: 'Pool',
+    component: PoolView
   }
 ]
 

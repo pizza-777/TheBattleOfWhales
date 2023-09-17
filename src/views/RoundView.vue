@@ -64,20 +64,10 @@
         <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide2 }} Ever</div>
       </div>
     </div>
-    <div id="footer">
-      <div id="links">
-        <div variant="outline-secondary" class="text-center">
-          <a href="./#/history" class="link-light"><b>Past rounds</b></a>
-        </div>
-        <div variant="outline-secondary" class="text-center">
-          <a href="./#/rules" class="link-light"><b>Rules</b></a>
-        </div>
-      </div>
-
-      <div class="container text-center text-light mt-4 footer">
-        Round contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
-      </div>
+    <div class="container text-center text-light mt-4 footer">
+      Round contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
+    <BaseFooter></BaseFooter>
   </div>
 </template>
 <script lang="ts">
@@ -85,10 +75,10 @@ import Vue from 'vue'
 import { RD1Address, RD2Address } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet.ts'
 import { sleep } from '@/utils'
-import {roundDuration} from '@/config'
+import { roundDuration } from '@/config'
 
 export default Vue.extend({
-  name: 'HomeView',
+  name: 'RoundView',
   mounted() {
     window.setInterval(() => {
       this.currentTime = Date.now()
@@ -245,7 +235,7 @@ export default Vue.extend({
         return
       }
       this.updateRoundState()
-      this.progressValue = 100 - ((this.roundEndTimestamp - currentTime) / 1000 / (roundDuration-60)) * 100 // todo change interval value
+      this.progressValue = 100 - ((this.roundEndTimestamp - currentTime) / 1000 / (roundDuration - 60)) * 100 // todo change interval value
     },
   },
 })

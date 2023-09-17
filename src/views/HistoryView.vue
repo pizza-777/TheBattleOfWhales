@@ -12,9 +12,7 @@
       <b-pagination  align="center" v-model="currentPage" :total-rows="rows" :per-page="perPage"></b-pagination>
     </div>
 
-    <div variant="outline-secondary" class="text-center mt-4" style="text-align: center">
-      <a href="./#/" class="link-light"><b>Current round</b></a>
-    </div>
+   <BaseFooter></BaseFooter>
   </div>
 </template>
 <script lang="ts">
@@ -23,7 +21,7 @@ import { getRounds } from '@/sdk'
 import { getRoundDataByAddress } from '@/wallet'
 
 export default Vue.extend({
-  name: 'HomeView',
+  name: 'HistoryView',
   mounted() {
     getRounds().then(async (rounds) => {
       rounds = await Promise.all(
