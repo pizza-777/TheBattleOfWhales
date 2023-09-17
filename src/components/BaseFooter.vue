@@ -1,5 +1,5 @@
 <template>
-  <div id="footer" class="text-light">
+  <div id="footer" class="text-light mt-4">
     <b-table-simple hover small caption-top responsive class="container text-left mt-4" id="footer-links">
       <b-tr>
         <b-td>
@@ -25,13 +25,10 @@
           </div></b-td
         >
         <b-td>
-          <div variant="outline-secondary">
-            <a href="./#/pool" class="link-light"><b>History</b></a>
-          </div></b-td
-        >
+        </b-td>
         <b-td>
           <div variant="outline-secondary">
-            <a href="./#/history" class="link-light"><b>GitHub</b></a>
+            <a href="https://github.com/pizza-777/TheBattleOfWhales" target="_blank" class="link-light"><b>GitHub</b></a>
           </div>
         </b-td>
       </b-tr>

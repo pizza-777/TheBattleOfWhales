@@ -6,16 +6,7 @@
       <b-list-group-item class="lgi">Claim your reward when the round ended</b-list-group-item>
       <b-list-group-item class="lgi">New rounds start every 6 hours</b-list-group-item>
     </b-list-group>
-    <div id="footer">
-      <div id="links">
-        <div variant="outline-secondary" class="text-center">
-          <a href="./#/history" class="link-light"><b>Past rounds</b></a>
-        </div>
-        <div variant="outline-secondary" class="text-center mt-3">
-          <a href="./" class="link-light"><b>Current round</b></a>
-        </div>
-      </div>
-    </div>
+    <BaseFooter></BaseFooter>
   </div>
 </template>
 <style scoped>
