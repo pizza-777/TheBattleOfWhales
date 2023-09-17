@@ -1,3 +1,6 @@
 
-export const RD1Address='0:b963a7eef10989ee64e2b57f2eb88bd41f4038371695ef21211e55268ae96dfa'
-export const RD2Address='0:9b297c32e8106b61061e60615a216303c7142d85b58037b0a1967078fc5d2829'
+export const RD1Address='0:2cb23a6b6aa720b3d980fbc192a5e60ae7b1775a13eff4371a71539e93b6595f'
+export const RD2Address='0:e7d141a4d34408b9ca7d3b362c5feb2a09f0f0d9ebfe8d0941b5b9cac420a15f'
+export const poolAddress = '0:da31cd885f5ad1c77c46ede9d7591eed80f091c0467771ed5b45ca331f283c00'
+export const claimPoolAddress = '0:d7e39e52fc1665d7412377d9b0d96f6dac76cb8a4619f54d47a334fbd5f8e3ae'
+export const roundDuration=60*6

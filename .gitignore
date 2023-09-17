@@ -27,5 +27,8 @@ src/contracts/*.abi.json
 src/contracts/*.tvc
 src/contracts/*.js
 *.txt
+*.tvc
+*.abi.json
+*Contract.js
 
 

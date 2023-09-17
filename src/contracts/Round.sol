@@ -1,9 +1,11 @@
 pragma ever-solidity >=0.71.0;
 
 import "./Bet.sol";
+import "./WhalePool.sol";
 
 contract Round {
     TvmCell static betCode;
+    address static pool;
 
     uint32 public static roundStart;
     uint32 public static roundEnd;
@@ -82,6 +84,9 @@ contract Round {
 
         if (side == 1) side1 += betValue;
         else side2 += betValue;
+        
+       // if(betValue > 10 ever)
+        WhalePool(pool).store{value: (betValue/20), flag: 0}(betValue, player);
     }
 
     function claimReward(

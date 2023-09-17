@@ -1,9 +1,10 @@
 import { Address, ProviderRpcClient } from 'everscale-inpage-provider'
 
-import { RD1Address, RD2Address } from './config'
+import { RD1Address, RD2Address, poolAddress } from './config'
 
 import BetContract from './contracts/BetContract'
 import RDContract from './contracts/RDContract'
+import WhalePoolContract from './contracts/WhalePoolContract'
 //import { UtilsContract } from './contracts/UtilsContract';
 
 import { ConnectionProperties, EverscaleStandaloneClient } from 'everscale-standalone-client'
@@ -117,6 +118,7 @@ export async function getRoundContractAddress(roundStart: number, roundEnd: numb
     publicKey: pubKey,
     initParams: {
       betCode: BetContract.code,
+      pool: poolAddress,
       roundStart: Number(roundStart),
       roundEnd: Number(roundEnd),
       RD1: RD1Address,
@@ -379,3 +381,32 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
       console.log('subscription error', r)
     })
 })()
+
+//pool
+
+//total bets
+export async function getPoolTotalVolume() {
+  // Optionally request account state
+  const provider = _everStandalone
+  
+  const contract = new provider.Contract(WhalePoolContract.abi, new Address(poolAddress))
+
+  const response: { value0: string; } = await contract.methods.getTotal({} as never).call()
+  return {
+    totalVolume: Number(response.value0) / 1e9,    
+  }
+}
+
+
+// //total bets
+// export async function getPoolTotalVolume() {
+//   // Optionally request account state
+//   const provider = _everStandalone
+  
+//   const contract = new provider.Contract(WhalePoolContract.abi, new Address(poolAddress))
+
+//   const response: { value0: string; } = await contract.methods.getTotal({} as never).call()
+//   return {
+//     totalVolume: Number(response.value0) / 1e9,    
+//   }
+// }
