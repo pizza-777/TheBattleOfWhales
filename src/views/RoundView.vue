@@ -50,7 +50,7 @@
     </div>
     <div class="container text-light text-center">Round state: {{ roundState }}</div>
     <div class="container">
-      <b-progress :value="progressValue" height="0.2rem" variant="secondary" :max="progressMax" :show-value="false"></b-progress>
+      <b-progress :value="progressValue" height="0.4rem" variant="secondary" :max="progressMax" :show-value="false"></b-progress>
     </div>
 
     <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} — {{ roundEnd }}</div>
@@ -64,20 +64,10 @@
         <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide2 }} Ever</div>
       </div>
     </div>
-    <div id="footer">
-      <div id="links">
-        <div variant="outline-secondary" class="text-center">
-          <a href="./#/history" class="link-light"><b>Past rounds</b></a>
-        </div>
-        <div variant="outline-secondary" class="text-center">
-          <a href="./#/rules" class="link-light"><b>Rules</b></a>
-        </div>
-      </div>
-
-      <div class="container text-center text-light mt-4 footer">
-        Round contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
-      </div>
+    <div class="container text-center text-light mt-4 footer">
+      Round contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
+   
   </div>
 </template>
 <script lang="ts">
@@ -235,12 +225,14 @@ export default Vue.extend({
       this.updateBetsData()
     },
     currentTime(_, currentTime) {
+      console.log(this.progressValue)
       //wait minute and update all
       if (currentTime > this.roundEndTimestamp) {
         if (currentTime > this.roundEndTimestamp + 60 * 1000) {
           this.updateAll()
         }
         this.progressValue = 100
+        
         this.updateRoundState()
         return
       }

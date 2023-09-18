@@ -14,8 +14,6 @@ contract Round {
     uint128 public side1 = 0;
     uint128 public side2 = 0;
 
-   // address static public happyDev;
-
     constructor() {
         require(
             msg.sender == RD1 || msg.sender == RD2,
@@ -95,15 +93,12 @@ contract Round {
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
         
         uint128 processingFee = calcProcessingFee(count);
-        reward = reward - processingFee;
-        //todo Where processing fee will go?
-        player.transfer({value: reward, flag: 64});   
-       // happyDev.transfer({value:1e8, flag:0});     
+        reward = reward - processingFee;       
+        player.transfer({value: reward, flag: 64});              
     }
 
-    //1% or minimal 0.2 ever
     function calcProcessingFee(uint32 count) public pure returns (uint128) {
-        return count * 5e8;
+        return count * 3e8;
     }
 
     function calcReward(
