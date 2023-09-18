@@ -23,9 +23,7 @@ pnpm-debug.log*
 *.sw?
 run.sh
 publish.sh
-src/contracts/*.abi.json
-src/contracts/*.tvc
-src/contracts/*.js
+*.abi.json
+*.tvc
+*Contract.js
 *.txt
-
-
