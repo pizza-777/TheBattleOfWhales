@@ -21,7 +21,7 @@
       </div>
     </div>
     <div id="userReward" class="container text-center text-light mt-4 mb-4">
-      <div v-if="userReward !== null && userReward > 0">       
+      <div>       
         <span class="p-3">Reward: {{ userReward }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
@@ -39,10 +39,7 @@
           </b-input-group-append>
         </b-input-group>
       </div>
-    </div>    
-    <div class="container text-center light text-light mt-4">
-      Contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
-    </div>
+    </div> 
     <BaseFooter></BaseFooter>
   </div>
 </template>
@@ -61,7 +58,9 @@ export default Vue.extend({
     this.totalAmountSide1 = data.side1
     this.totalAmountSide2 = data.side2
     getUserDataByRound(this.roundContractAddress).then((data) => {
-      if (typeof data == 'undefined') return
+      if (typeof data == 'undefined') {
+        return
+      }
       this.userAmountSide1 = Math.round(data.side1 / 1e9)
       this.userAmountSide2 = Math.round(data.side2 / 1e9)
       this.userBetsAddress = data.address.toString()
@@ -83,13 +82,13 @@ export default Vue.extend({
       roundContractAddress: '',
       totalAmountSide1: null,
       totalAmountSide2: null,
-      userAmountSide1: null,
-      userAmountSide2: null,
-      userReward: null,
+      userAmountSide1: 0,
+      userAmountSide2: 0,
+      userReward: 0,
       claimDisabled: false,
       claimedReward: false,
       userBetsAddress: '',
-      userBox: false,
+      userBox: true,
     }
   },
   methods: {

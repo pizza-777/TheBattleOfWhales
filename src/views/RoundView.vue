@@ -67,7 +67,7 @@
     <div class="container text-center text-light mt-4 footer">
       Round contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
-   
+    <BaseFooter></BaseFooter>
   </div>
 </template>
 <script lang="ts">
@@ -225,7 +225,6 @@ export default Vue.extend({
       this.updateBetsData()
     },
     currentTime(_, currentTime) {
-      console.log(this.progressValue)
       //wait minute and update all
       if (currentTime > this.roundEndTimestamp) {
         if (currentTime > this.roundEndTimestamp + 60 * 1000) {
