@@ -25,14 +25,14 @@ contract Bet {
         if (side == 1) side1 += amount;
         else side2 += amount;
 
-        round.transfer({value: 0, flag: 128});
+        Round(round).replenish{value: 0, flag: 128}();
     }
 
     function claim() public {
         require(msg.sender == round, 103, "Wrong sender");        
         tvm.rawReserve(1e7, 2);
         claimedReward = true;
-        Round(round).claimReward{value: 0, flag: 128}(player, side1, side2, count);
+        Round(round).claimReward{value: 0, flag: 128}(player, side1, side2);
     }
 
     function getBetsData()
