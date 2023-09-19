@@ -91,14 +91,15 @@ contract Round {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
-        
-        uint128 processingFee = calcProcessingFee(count);
-        reward = reward - processingFee;       
-        player.transfer({value: reward, flag: 64});              
+        if (reward == 0) return;
+        uint128 processingFee = calcProcessingFee(count, reward);
+        reward = reward - processingFee;
+        player.transfer({value: reward, flag: 64});
     }
-
-    function calcProcessingFee(uint32 count) public pure returns (uint128) {
-        return count * 3e8;
+//count doesn't work becaouse on other side many cheep bets that wasn't counted
+    function calcProcessingFee(uint32 count, uint128 reward) public pure returns (uint128) {
+        
+        return count * 5e8 + reward / 100;
     }
 
     function calcReward(
@@ -109,11 +110,11 @@ contract Round {
             return amountOnSide1 + amountOnSide2;
         }
         if (side1 > side2) {
-            return amountOnSide1 + (amountOnSide1 / side1) * side2;
+            return amountOnSide1 + (amountOnSide1 * side2) / side1;
         }
 
         if (side2 > side1) {
-            return amountOnSide2 + (amountOnSide2 / side2) * side1;
+            return amountOnSide2 + (amountOnSide2 * side1) / side2;
         }
     }
 
