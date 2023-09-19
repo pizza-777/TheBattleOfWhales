@@ -82,7 +82,7 @@ export default Vue.extend({
   mounted() {
     window.setInterval(() => {
       this.currentTime = Date.now()
-    }, 1000)
+    }, 100)
     this.updateAll()
   },
   data() {
