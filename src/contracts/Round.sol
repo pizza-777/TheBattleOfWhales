@@ -100,18 +100,23 @@ contract Round {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
-        if (reward == 0) return;
+        
         paymentFeeAfterRoundEnded = calcProcessingFee(); 
-        reward = reward - paymentFeeAfterRoundEnded;
+        if((int(reward) - int(paymentFeeAfterRoundEnded)) > 0) {
+            reward = reward - paymentFeeAfterRoundEnded;
+        }else{
+            reward = 0;
+        }
+
         player.transfer({value: reward, flag: 64});
     }
 
     function calcProcessingFee() public returns (uint128) {
         //check if payment fee already calcualted
         if(paymentFeeAfterRoundEnded > 0) return paymentFeeAfterRoundEnded;
-        contractBalanceAfterRoundEnded = address(this).balance; 
+        contractBalanceAfterRoundEnded = address(this).balance - msg.value; 
         //check if enough money for payment without fee
-        if((contractBalanceAfterRoundEnded - 1e8) > (side1 + side2)) return 1;
+        if((int(contractBalanceAfterRoundEnded) - 1e8) > int(side1 + side2)) return 1;
         //calculate payment fee
         uint128 lackedPaymentAmount = (side1 + side2) - contractBalanceAfterRoundEnded + 1e7;//1e7 is the minimal remaining contact balance
         if (side1 == side2) {
