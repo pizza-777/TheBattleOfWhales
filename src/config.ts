@@ -1,4 +1,4 @@
 
-export const RD1Address='0:7b0f215daae4b78b9a53dc87231a35c793401ed1e9bbcf7d87795154421ed818'
-export const RD2Address='0:2f3e00e18572d57700e42a5b2f8f80ed4a1d894630ef78c2a4e89af2740ffa7e'
+export const RD1Address='0:acb8d06328d438d67617db10147ef39f05cae2133b49706874583604c16fe1c9'
+export const RD2Address='0:2661ae3ec60ab1299d6e43c7569e83f335ed8176913727de68b4e280232962ec'
 export const roundDuration=60*6

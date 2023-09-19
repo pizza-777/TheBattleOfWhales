@@ -105,13 +105,17 @@ contract Round {
         reward = reward - paymentFeeAfterRoundEnded;
         player.transfer({value: reward, flag: 64});
     }
-//count doesn't work becaouse on other side many cheep bets that wasn't counted
+
     function calcProcessingFee() public returns (uint128) {
+        //check if payment fee already calcualted
         if(paymentFeeAfterRoundEnded > 0) return paymentFeeAfterRoundEnded;
         contractBalanceAfterRoundEnded = address(this).balance; 
-        uint128 lackedPaymentAmount = (side1 + side2) - contractBalanceAfterRoundEnded + 1e8;//1e8 remaining contact balance
+        //check if enough money for payment without fee
+        if((contractBalanceAfterRoundEnded - 1e8) > (side1 + side2)) return 1;
+        //calculate payment fee
+        uint128 lackedPaymentAmount = (side1 + side2) - contractBalanceAfterRoundEnded + 1e7;//1e7 is the minimal remaining contact balance
         if (side1 == side2) {
-            return math.divc(lackedPaymentAmount, betsOnSide1 + betsOnSide2) ;
+            return math.divc(lackedPaymentAmount, betsOnSide1 + betsOnSide2) ;//ceiled value will be + to remaining contract balance
         }
         if (side1 > side2) {
             return math.divc(lackedPaymentAmount, betsOnSide1) ;
