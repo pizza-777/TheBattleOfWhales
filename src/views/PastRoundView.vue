@@ -22,11 +22,11 @@
     </div>
     <div id="userReward" class="container text-center text-light mt-4 mb-4">
       <div>       
-        <span class="p-3">Reward: {{ userReward }} EVER</span>
+        <span class="p-3">Reward ≈ {{ (userReward - fee).toFixed(2) }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
-         <b-icon icon="question-circle" id="rewardTip" aria-label="Help"></b-icon>
-        <b-tooltip target="rewardTip" variant="dark">Estimated reward fee is approximatelly 0.5 Ever per bet</b-tooltip>
+        <b-icon icon="question-circle" id="rewardTip" aria-label="Help"></b-icon>
+        <b-tooltip target="rewardTip" variant="dark">{{fee.toFixed(2)}} Ever fee included</b-tooltip>
       </div>
       <div id="claimAddr" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
         <b-input-group size="sm">
@@ -57,6 +57,7 @@ export default Vue.extend({
     this.roundEnd = new Date(data.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(data.roundEnd * 1000).toLocaleTimeString()
     this.totalAmountSide1 = data.side1
     this.totalAmountSide2 = data.side2
+    this.fee = data.fee
     getUserDataByRound(this.roundContractAddress).then((data) => {
       if (typeof data == 'undefined') {
         return
@@ -89,6 +90,7 @@ export default Vue.extend({
       claimedReward: false,
       userBetsAddress: '',
       userBox: true,
+      fee:0
     }
   },
   methods: {

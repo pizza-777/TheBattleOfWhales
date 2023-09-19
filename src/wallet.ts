@@ -281,11 +281,13 @@ export async function getRoundDataByAddress(address: string) {
   const totalBets: { value0: string; value1: string } = await contract.methods.getBetsData({} as never).call()
   const start: { roundStart: number } = await contract.methods.roundStart({} as never).call()
   const end: { roundEnd: number } = await contract.methods.roundEnd({} as never).call()
+  const fee: { value0: number } = await contract.methods.calcProcessingFee({} as never).call()
   return {
     side1: Number(totalBets.value0) / 1e9,
     side2: Number(totalBets.value1) / 1e9,
     roundStart: start.roundStart,
     roundEnd: end.roundEnd,
+    fee: Number(fee.value0) / 1e9
   }
 }
 
