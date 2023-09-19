@@ -2,32 +2,30 @@
   <div id="footer" class="text-light mt-4">
     <b-table-simple hover small caption-top responsive class="container text-left mt-4 text-center" id="footer-links">
       <b-tr>
-        <b-td>
+        <b-td class="col-md-4">
           <div variant="outline-secondary">
             <a href="./#/" class="link-light"><b>Current round</b></a>
           </div>
         </b-td>
-        <b-td>
+        <b-td class="col-md-4">
           <div variant="outline-secondary">
             <a href="./#/history" class="link-light"><b>Past rounds</b></a>
           </div>
         </b-td>
-        <b-td>
+        <b-td class="col-md-4">
           <div variant="outline-secondary">
             <a href="./#/rules" class="link-light"><b>Rules</b></a>
           </div>
         </b-td>
       </b-tr>
-      <b-tr>                       
-        <b-td>
-        </b-td>
-          <b-td>
+      <b-tr>
+        <b-td> </b-td>
+        <b-td class="col-md-4">
           <div variant="outline-secondary">
             <a href="https://github.com/pizza-777/TheBattleOfWhales" target="_blank" class="link-light"><b>GitHub</b></a>
           </div>
         </b-td>
-             <b-td>
-        </b-td>
+        <b-td> </b-td>
       </b-tr>
     </b-table-simple>
   </div>
