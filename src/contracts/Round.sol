@@ -13,6 +13,11 @@ contract Round {
 
     uint128 public side1 = 0;
     uint128 public side2 = 0;
+    uint128 public betsOnSide1 = 0;
+    uint128 public betsOnSide2 = 0;
+
+    uint128 contractBalanceAfterRoundEnded = 0;
+    uint128 paymentFeeAfterRoundEnded = 0;
 
     constructor() {
         require(
@@ -78,28 +83,43 @@ contract Round {
         //flag 0: pay fee from value because bet value is a msg.value as a param
         Bet(betAddress).storeBet{value: 1e8, flag: 0}(betValue, side);
 
-        if (side == 1) side1 += betValue;
-        else side2 += betValue;
+        if (side == 1) {
+            side1 += betValue;
+            betsOnSide1++;
+        } else {
+            side2 += betValue;
+            betsOnSide2++;
+        }
     }
 
     function claimReward(
         address player,
         uint128 amountOnSide1,
-        uint128 amountOnSide2,
-        uint32 count
-    ) public view {
+        uint128 amountOnSide2
+    ) public {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
         if (reward == 0) return;
-        uint128 processingFee = calcProcessingFee(count, reward);
-        reward = reward - processingFee;
+        paymentFeeAfterRoundEnded = calcProcessingFee(); 
+        reward = reward - paymentFeeAfterRoundEnded;
         player.transfer({value: reward, flag: 64});
     }
 //count doesn't work becaouse on other side many cheep bets that wasn't counted
-    function calcProcessingFee(uint32 count, uint128 reward) public pure returns (uint128) {
-        
-        return count * 5e8 + reward / 100;
+    function calcProcessingFee() public returns (uint128) {
+        if(paymentFeeAfterRoundEnded > 0) return paymentFeeAfterRoundEnded;
+        contractBalanceAfterRoundEnded = address(this).balance; 
+        uint128 lackedPaymentAmount = (side1 + side2) - contractBalanceAfterRoundEnded + 1e8;//1e8 remaining contact balance
+        if (side1 == side2) {
+            return math.divc(lackedPaymentAmount, betsOnSide1 + betsOnSide2) ;
+        }
+        if (side1 > side2) {
+            return math.divc(lackedPaymentAmount, betsOnSide1) ;
+        }
+
+        if (side2 > side1) {
+            return math.divc(lackedPaymentAmount, betsOnSide2) ;
+        }
     }
 
     function calcReward(
