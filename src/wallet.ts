@@ -96,17 +96,6 @@ export async function authState(): Promise<boolean | string | undefined> {
     console.log('error in auth')
   }
 }
-//https://provider-docs.broxus.com/guides/subscriptions.html
-//
-//watching for network changes and pass them to the Vue app
-
-export async function betsSubscriber() {
-  const _ever = _everStandalone
-  const rt: any = await getRoundTime()
-  const rAddr = await getRoundContractAddress(rt.roundStart, rt.roundEnd)
-  const transactionsSub = await _ever.subscribe('transactionsFound', { address: rAddr })
-  return transactionsSub
-}
 
 //use https://provider-docs.broxus.com/guides/deploy.html#expected-address-retrieval
 export async function getRoundContractAddress(roundStart: number, roundEnd: number) {
@@ -120,7 +109,7 @@ export async function getRoundContractAddress(roundStart: number, roundEnd: numb
       roundStart: Number(roundStart),
       roundEnd: Number(roundEnd),
       RD1: RD1Address,
-      RD2: RD2Address
+      RD2: RD2Address,
     },
   }
 
@@ -199,7 +188,7 @@ export async function getBetsData() {
   const roundTime: any = await getRoundTime()
 
   const addressData = await checkRoundContract(roundTime.roundStart, roundTime.roundEnd)
- 
+
   if (addressData.acc_type_name == 'NonExist')
     return {
       side1: 0,
@@ -287,7 +276,7 @@ export async function getRoundDataByAddress(address: string) {
     side2: Number(totalBets.value1) / 1e9,
     roundStart: start.roundStart,
     roundEnd: end.roundEnd,
-    fee: Number(fee.value0) / 1e9
+    fee: Number(fee.value0) / 1e9,
   }
 }
 
@@ -299,7 +288,7 @@ export async function claim(addr: Address) {
     return await everProvider.sendMessage({
       sender: accountInteraction.address,
       recipient: round.address,
-      amount:String(1e8),
+      amount: String(1e8),
       bounce: true,
     })
   } catch (e) {
@@ -317,7 +306,7 @@ export async function getNetwork(): Promise<string | undefined> {
 //VUE GLOBALS VARIABLES
 const vueGlobal = Vue.observable({
   network: '',
-  betsSubscriber: {},    
+  betsSubscriber: {},
   permissionsChanged: {},
 })
 
@@ -351,7 +340,8 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
   },
 })
 
-//subscritions
+  //subscritions
+  //https://provider-docs.broxus.com/guides/subscriptions.html
 ;(async () => {
   const provider = ever()
   //  if ((await (await provider).hasProvider()) == false) return
@@ -368,15 +358,18 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
       ;(await _ever.subscribe('permissionsChanged')).on('data', (data: { permissions: any }) => {
         vueGlobal.permissionsChanged = data
         //alert('permissionsChanged')
-        console.log('permissions changed' + JSON.stringify(data))
+        // console.log('permissions changed' + JSON.stringify(data))
       })
-
-      //subscriber on current round transactions
-      ;(await betsSubscriber()).on('data', (data) => {
+      ;(await _ever.subscribe('transactionsFound', { address: new Address(RD1Address) })).on('data', (data) => {
         vueGlobal.betsSubscriber = data
-        console.log('bet placed'/*, JSON.stringify(data)*/)
+        console.log('bet1 placed' /*, JSON.stringify(data)*/)
+      })
+      ;(await _ever.subscribe('transactionsFound', { address: new Address(RD2Address) })).on('data', (data) => {
+        vueGlobal.betsSubscriber = data
+        console.log('bet2 placed' /*, JSON.stringify(data)*/)
       })
     })
+
     .catch((r) => {
       console.log('subscription error', r)
     })
