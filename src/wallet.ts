@@ -2,11 +2,12 @@ import { Address, ProviderRpcClient } from 'everscale-inpage-provider'
 
 import { RD1Address, RD2Address } from './config'
 
+import { connection } from './connection';
+
 import BetContract from './contracts/BetContract'
 import RDContract from './contracts/RDContract'
-//import { UtilsContract } from './contracts/UtilsContract';
 
-import { ConnectionProperties, EverscaleStandaloneClient } from 'everscale-standalone-client'
+import { EverscaleStandaloneClient } from 'everscale-standalone-client'
 import RoundContract from './contracts/RoundContract'
 
 import { checkAccTypeName } from './sdk'
@@ -19,7 +20,7 @@ let _accountInteraction: everWallet | undefined
 const _everStandalone = new ProviderRpcClient({
   fallback: () =>
     EverscaleStandaloneClient.create({
-      connection: 'local' as ConnectionProperties,
+      connection: connection.local,
     }),
   forceUseFallback: true,
 })
@@ -50,11 +51,7 @@ async function everWallet() {
   return _accountInteraction
 }
 
-//round deployer contract
 const pubKey = '9c2d5cfa59defd4534861a066e4e3c0833d4d32ff4fa2318234064d6b538d471'
-
-//utils
-//const UtilsAddress = "0:9e4c05724a4bb81a27d5b2100974acde329168469717ea172c88cd139079b37f"
 
 export async function bet(side: 1 | 2, amount: number) {
   const everProvider = await ever()
