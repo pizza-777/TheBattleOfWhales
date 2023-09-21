@@ -3,7 +3,7 @@ const { BetContract } = require("./BetContract");
 const fs = require('fs')
 const path = require('path')
 
-await $`everdev network default se`
+await $`everdev network default dev`
 
 const rd1 = (await $`everdev c d RD.sol -d roundCode:${RoundContract.code},betCode:${BetContract.code},side:1 -s tradingBot -v 1e8`).stdout
 const rd1Addr = rd1.match(/(-1|0):[0-9a-f]{64}/)[0]

@@ -9,5 +9,7 @@ export const connection = {
         data: {
             endpoints: ['https://devnet.evercloud.dev/89dc20fb2e0946498a28eb021db8c861/graphql'],
         }
-    } as ConnectionProperties
+    } 
 }
+
+export const explorer = 

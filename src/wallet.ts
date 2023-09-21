@@ -7,7 +7,7 @@ import { connection } from './connection';
 import BetContract from './contracts/BetContract'
 import RDContract from './contracts/RDContract'
 
-import { EverscaleStandaloneClient } from 'everscale-standalone-client'
+import { ConnectionProperties, EverscaleStandaloneClient } from 'everscale-standalone-client'
 import RoundContract from './contracts/RoundContract'
 
 import { checkAccTypeName } from './sdk'
@@ -20,7 +20,7 @@ let _accountInteraction: everWallet | undefined
 const _everStandalone = new ProviderRpcClient({
   fallback: () =>
     EverscaleStandaloneClient.create({
-      connection: connection.local,
+      connection: connection.testnet as ConnectionProperties,
     }),
   forceUseFallback: true,
 })
