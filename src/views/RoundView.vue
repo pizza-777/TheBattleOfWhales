@@ -65,17 +65,19 @@
       </div>
     </div>
     <div class="container text-center text-light mt-4 footer">
-      Round contract: <b-link class="link-light" :href="'http://localhost/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
+      Round contract: <b-link class="link-light" :href="explorer + '/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
     <BaseFooter></BaseFooter>
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { RD1Address, RD2Address } from '@/config'
-import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet.ts'
+import { RD1Address, RD2Address, network } from '@/config'
+import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet'
 import { sleep } from '@/utils'
 import {roundDuration} from '@/config'
+import { explorer } from '@/connection'
+import { BIconTelephoneMinusFill } from 'bootstrap-vue'
 
 export default Vue.extend({
   name: 'HomeView',
@@ -92,18 +94,18 @@ export default Vue.extend({
       fishInputAmount2: 0,
       alert: false,
       alertMessage: '',
-      roundStart: null,
-      roundEnd: null,
-      roundStartTimestamp: null,
-      roundEndTimestamp: null,
+      roundStart: '',
+      roundEnd: '',
+      roundStartTimestamp: 0,
+      roundEndTimestamp: 0,
       roundContractAddress: '',
-      totalAmountSide1: null,
-      totalAmountSide2: null,
-      userAmountSide1: null,
-      userAmountSide2: null,
+      totalAmountSide1: 0,
+      totalAmountSide2: 0,
+      userAmountSide1: 0,
+      userAmountSide2: 0,
       userBox: false,
-      RD1Address: null,
-      RD2Address: null,
+      RD1Address: '',
+      RD2Address: '',
       betBtnDisabled: false,
       leftFishSize: '5em',
       rightFishSize: '5em',
@@ -111,6 +113,8 @@ export default Vue.extend({
       progressMax: 100,
       progressValue: 0,
       roundState: '',
+      explorer: '',
+      network: ''
     }
   },
   methods: {
@@ -122,7 +126,7 @@ export default Vue.extend({
         this.alert = false
         return
       }
-      const amount = this['fishInputAmount' + side]
+      const amount = this['fishInputAmount' + side as keyof Vue]
       if (isNaN(amount) || amount < 1) {
         this.alertMessage = 'Min bet 1 EVER'
         this.alert = true
@@ -131,23 +135,23 @@ export default Vue.extend({
         return
       }
       this.alert = false
-      await bet(side, Number(this['fishInputAmount' + side]) * 1e9)
+      await bet(side, Number(this['fishInputAmount' + side as keyof Vue]) * 1e9)
       // const toolTipId = side == 1 ? 'betBtnLeft' : 'betBtnRight'
       // this.$root.$emit('bv::show::tooltip', toolTipId)
       // await sleep(1000)
       // this.$root.$emit('bv::hide::tooltip', toolTipId)
     },
-    async _copy(side) {
-      if (side == 1) this.$refs.leftAddr.focus()
-      if (side == 2) this.$refs.rightAddr.focus()
+    async _copy(side: number) {
+      if (side == 1) (this.$refs.leftAddr as HTMLInputElement).focus()
+      if (side == 2) (this.$refs.rightAddr as HTMLInputElement).focus()
       document.execCommand('copy')
       await sleep(1000)
       const toolTipId = side == 1 ? 'copyBtnLeft' : 'copyBtnRight'
       this.$root.$emit('bv::hide::tooltip', toolTipId)
     },
-    controlNetwork() {
-      if (typeof this.network == 'undefined') return
-      if (this.$network !== 'localnet') {
+    controlNetwork() {    
+      if (typeof this.$network == 'undefined') return
+      if (this.network !== this.$network) {
         this.alert = true
         this.alertMessage = 'Switch wallet to local network. Current network is ' + this.$network
       } else {
@@ -173,10 +177,6 @@ export default Vue.extend({
         this.userAmountSide2 = data.side2
         this.userBox = true
       })
-    },
-    updateFishSize(side1, side2) {
-      this.$refs.leftFish.style.fontSize = side1 > side2 ? '5.5em' : '5em'
-      this.$refs.rightFish.style.fontSize = side2 > side2 ? '5.5em' : '5em'
     },
     updateRoundState() {
       if (this.currentTime < this.roundStartTimestamp + 60 * 1000) {
@@ -208,13 +208,16 @@ export default Vue.extend({
         this.userAmountSide2 = data.side2
         this.userBox = true
       })
-      getNetwork().then((network) => {
-        this.$network = network
+      getNetwork().then((_network) => {
+        if(typeof _network == 'undefined') return
+        this.$network = _network
         this.controlNetwork()
       })
       this.RD1Address = RD1Address
       this.RD2Address = RD2Address
       this.alert = false
+      this.explorer = explorer()
+      this.network = network
     },
   },
   watch: {

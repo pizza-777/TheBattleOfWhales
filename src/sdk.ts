@@ -1,7 +1,7 @@
 import { TonClient } from '@eversdk/core'
 import { libWeb } from '@eversdk/lib-web'
 import RoundContract from './contracts/RoundContract'
-import {connection} from './connection'
+import {sdk} from './connection'
 
 // Application initialization
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -10,8 +10,7 @@ TonClient.useBinaryLibrary(libWeb)
 
 const client = new TonClient({
   network: {
-    //endpoints: ['http://127.0.0.1/graphql'],
-    endpoints: connection.testnet.data.endpoints
+    endpoints: [sdk()]
   },
 })
 

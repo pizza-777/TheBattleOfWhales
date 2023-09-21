@@ -2,7 +2,7 @@ import { Address, ProviderRpcClient } from 'everscale-inpage-provider'
 
 import { RD1Address, RD2Address } from './config'
 
-import { connection } from './connection';
+import { walletConnection } from './connection';
 
 import BetContract from './contracts/BetContract'
 import RDContract from './contracts/RDContract'
@@ -15,12 +15,16 @@ import { checkAccTypeName } from './sdk'
 import Vue from 'vue'
 
 let _ever: ProviderRpcClient
-let _accountInteraction: everWallet | undefined
+let _accountInteraction: {
+  address: Address;
+  publicKey: string;
+  contractType: string;
+} | undefined;
 
 const _everStandalone = new ProviderRpcClient({
   fallback: () =>
     EverscaleStandaloneClient.create({
-      connection: connection.testnet as ConnectionProperties,
+      connection: walletConnection() as ConnectionProperties,
     }),
   forceUseFallback: true,
 })
@@ -164,7 +168,7 @@ export async function checkRoundContract(roundStart: number, roundEnd: number) {
   }
 }
 
-export async function getRoundTime(): Promise<{ roundStart: number; roundEnd: number } | Error> {
+export async function getRoundTime(): Promise<{ roundStart: number; roundEnd: number }> {
   const everProvider = _everStandalone
   const contract = new everProvider.Contract(RDContract.abi, new Address(RD1Address))
   try {
@@ -339,35 +343,35 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
 
   //subscritions
   //https://provider-docs.broxus.com/guides/subscriptions.html
-;(async () => {
-  const provider = ever()
-  //  if ((await (await provider).hasProvider()) == false) return
+  ; (async () => {
+    const provider = ever()
+    //  if ((await (await provider).hasProvider()) == false) return
 
-  provider
-    .then(async (_ever) => {
-      //network
-      (await _ever.subscribe('networkChanged')).on('data', (event: { selectedConnection: any }) => {
-        vueGlobal.network = event.selectedConnection
-        console.log('network changed')
+    provider
+      .then(async (_ever) => {
+        //network
+        (await _ever.subscribe('networkChanged')).on('data', (event: { selectedConnection: any }) => {
+          vueGlobal.network = event.selectedConnection
+          console.log('network changed')
+        })
+
+          //permissions: first load, login, logout
+          ; (await _ever.subscribe('permissionsChanged')).on('data', (data: { permissions: any }) => {
+            vueGlobal.permissionsChanged = data
+            //alert('permissionsChanged')
+            // console.log('permissions changed' + JSON.stringify(data))
+          })
+          ; (await _ever.subscribe('transactionsFound', { address: new Address(RD1Address) })).on('data', (data) => {
+            vueGlobal.betsSubscriber = data
+            console.log('bet1 placed' /*, JSON.stringify(data)*/)
+          })
+          ; (await _ever.subscribe('transactionsFound', { address: new Address(RD2Address) })).on('data', (data) => {
+            vueGlobal.betsSubscriber = data
+            console.log('bet2 placed' /*, JSON.stringify(data)*/)
+          })
       })
 
-      //permissions: first load, login, logout
-      ;(await _ever.subscribe('permissionsChanged')).on('data', (data: { permissions: any }) => {
-        vueGlobal.permissionsChanged = data
-        //alert('permissionsChanged')
-        // console.log('permissions changed' + JSON.stringify(data))
+      .catch((r) => {
+        console.log('subscription error', r)
       })
-      ;(await _ever.subscribe('transactionsFound', { address: new Address(RD1Address) })).on('data', (data) => {
-        vueGlobal.betsSubscriber = data
-        console.log('bet1 placed' /*, JSON.stringify(data)*/)
-      })
-      ;(await _ever.subscribe('transactionsFound', { address: new Address(RD2Address) })).on('data', (data) => {
-        vueGlobal.betsSubscriber = data
-        console.log('bet2 placed' /*, JSON.stringify(data)*/)
-      })
-    })
-
-    .catch((r) => {
-      console.log('subscription error', r)
-    })
-})()
+  })()

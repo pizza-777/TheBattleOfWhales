@@ -1,5 +1,11 @@
-declare type FileInfo = { name: string, type: string, size: string }
-declare type everWallet = { address: Address; publicKey: string; contractType: WalletContractType; }
-declare type BlockchainMessages = {
-    edges: { node: { body: string } }[], pageInfo: { hasNextPage: boolean, endCursor: string }
-} 
+// 1. Make sure to import 'vue' before declaring augmented types
+import Vue from 'vue'
+
+// 2. Specify a file with the types you want to augment
+//    Vue has the constructor type in types/vue.d.ts
+declare module 'vue/types/vue' {
+  // 3. Declare augmentation for Vue
+  interface Vue {
+    $network: string
+  }
+}
