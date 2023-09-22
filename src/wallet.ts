@@ -2,7 +2,7 @@ import { Address, ProviderRpcClient } from 'everscale-inpage-provider'
 
 import { RD1Address, RD2Address } from './config'
 
-import { walletConnection } from './connection';
+import { walletConnection } from './connection'
 
 import BetContract from './contracts/BetContract'
 import RDContract from './contracts/RDContract'
@@ -15,11 +15,13 @@ import { checkAccTypeName } from './sdk'
 import Vue from 'vue'
 
 let _ever: ProviderRpcClient
-let _accountInteraction: {
-  address: Address;
-  publicKey: string;
-  contractType: string;
-} | undefined;
+let _accountInteraction:
+  | {
+      address: Address
+      publicKey: string
+      contractType: string
+    }
+  | undefined
 
 const _everStandalone = new ProviderRpcClient({
   fallback: () =>
@@ -99,7 +101,7 @@ export async function authState(): Promise<boolean | string | undefined> {
 }
 
 //use https://provider-docs.broxus.com/guides/deploy.html#expected-address-retrieval
-export async function getRoundContractAddress(roundStart: number, roundEnd: number) {
+export async function getRoundContractAddress(roundStart: number, roundEnd: number): Promise<Address> {
   const provider = _everStandalone
   const deployParams: any = {
     tvc: RoundContract.tvc,
@@ -113,7 +115,6 @@ export async function getRoundContractAddress(roundStart: number, roundEnd: numb
       RD2: RD2Address,
     },
   }
-
   // Get the expected address of the contract
   const expectedAddress = await provider.getExpectedAddress(RoundContract.abi, deployParams)
 
@@ -129,9 +130,10 @@ export async function getBetContractAddress() {
   const accountInteraction = await everWallet()
   const rt: any = await getRoundTime()
   const roundData = await checkRoundContract(rt.roundStart, rt.roundEnd)
-  if (roundData.acc_type_name == 'NonExist') {
-    return null
-  }
+  
+  // if (roundData.acc_type_name == 'NonExist') {
+  //   return null
+  // }
 
   const deployParams = {
     tvc: BetContract.tvc,
@@ -161,7 +163,6 @@ export async function checkBetContract() {
 
 export async function checkRoundContract(roundStart: number, roundEnd: number) {
   const addr = await getRoundContractAddress(roundStart, roundEnd)
-
   return {
     address: addr,
     acc_type_name: await checkAccTypeName(JSON.stringify(addr)),
@@ -341,37 +342,70 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
   },
 })
 
-  //subscritions
-  //https://provider-docs.broxus.com/guides/subscriptions.html
-  ; (async () => {
-    const provider = ever()
-    //  if ((await (await provider).hasProvider()) == false) return
+//subscritions
+//https://provider-docs.broxus.com/guides/subscriptions.html
 
-    provider
-      .then(async (_ever) => {
-        //network
-        (await _ever.subscribe('networkChanged')).on('data', (event: { selectedConnection: any }) => {
-          vueGlobal.network = event.selectedConnection
-          console.log('network changed')
+//wallet subscriptions
+;(async () => {
+  const provider = ever()
+  if ((await (await provider).hasProvider()) == false) return
+  const auth = await authState()
+  if (!auth || typeof auth == 'undefined') return
+
+  provider
+    .then(async (_ever) => {
+      //network
+      (await _ever.subscribe('networkChanged')).on('data', (event: { selectedConnection: any }) => {
+        vueGlobal.network = event.selectedConnection
+        console.log('network changed')
+      })
+
+      //permissions: first load, login, logout
+      ;(await _ever.subscribe('permissionsChanged')).on('data', (data: { permissions: any }) => {
+        vueGlobal.permissionsChanged = data
+        //alert('permissionsChanged')
+        // console.log('permissions changed' + JSON.stringify(data))
+      })
+      //bet subscription
+      const betAddr = await getBetContractAddress()
+      console.log('bet contract addr', betAddr)
+      if (betAddr) {
+        (await _ever.subscribe('contractStateChanged', { address: betAddr })).on('data', (data) => {
+          vueGlobal.betsSubscriber = data
+          console.log('betContract state changed' /*, JSON.stringify(data)*/)
         })
+        ;(await _ever.subscribe('transactionsFound', { address: betAddr })).on('data', (data) => {
+          vueGlobal.betsSubscriber = data
+          console.log('bet transaction fount' /*, JSON.stringify(data)*/)
+        })
+      }
+    })
+    .catch((r) => {
+      console.log('subscription error', r)
+    })
+})()
 
-          //permissions: first load, login, logout
-          ; (await _ever.subscribe('permissionsChanged')).on('data', (data: { permissions: any }) => {
-            vueGlobal.permissionsChanged = data
-            //alert('permissionsChanged')
-            // console.log('permissions changed' + JSON.stringify(data))
-          })
-          ; (await _ever.subscribe('transactionsFound', { address: new Address(RD1Address) })).on('data', (data) => {
-            vueGlobal.betsSubscriber = data
-            console.log('bet1 placed' /*, JSON.stringify(data)*/)
-          })
-          ; (await _ever.subscribe('transactionsFound', { address: new Address(RD2Address) })).on('data', (data) => {
-            vueGlobal.betsSubscriber = data
-            console.log('bet2 placed' /*, JSON.stringify(data)*/)
-          })
-      })
+//standalone transactions subscriptions
+;(async () => {
+  const provider = _everStandalone
+  ;(await provider.subscribe('transactionsFound', { address: new Address(RD1Address) })).on('data', (data) => {
+    vueGlobal.betsSubscriber = data
+    console.log('bet1 placed' /*, JSON.stringify(data)*/)
+  })
+  ;(await provider.subscribe('transactionsFound', { address: new Address(RD2Address) })).on('data', (data) => {
+    vueGlobal.betsSubscriber = data
+    console.log('bet2 placed' /*, JSON.stringify(data)*/)
+  })
 
-      .catch((r) => {
-        console.log('subscription error', r)
-      })
-  })()
+  //round subscription
+  const roundTime: any = await getRoundTime()
+  const roundAddr: Address = await getRoundContractAddress(roundTime.roundStart, roundTime.roundEnd)
+  ;(await provider.subscribe('contractStateChanged', { address: roundAddr })).on('data', (data) => {
+    vueGlobal.betsSubscriber = data
+    console.log('round contract state changed' /*, JSON.stringify(data)*/)
+  })
+  ;(await provider.subscribe('transactionsFound', { address: roundAddr })).on('data', (data) => {
+    vueGlobal.betsSubscriber = data
+    console.log('round transacton found' /*, JSON.stringify(data)*/)
+  })
+})()
