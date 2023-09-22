@@ -19,18 +19,17 @@ contract RD {
     //because direct payment go to receive and bet
     function replenish() public {}
 
-    function placeBet() public  {
-        //return small amount to sender        
-        if(msg.value < 1e9){           
-            msg.sender.transfer({value: 0, flag: 64});            
+    function placeBet() public {
+        //return small amount to sender
+        if (msg.value < 1e9) {
+            msg.sender.transfer({value: 0, flag: 64});
             return;
         }
         (uint32 roundStart, uint32 roundEnd) = roundTime();
-        require(
-            (roundStart + 60) < block.timestamp,
-            101,
-            "Pause one minute between rounds"
-        );
+        if ((roundStart + 60) > block.timestamp || roundEnd < block.timestamp) {
+            msg.sender.transfer({value: 0, flag: 64});
+            return;
+        }
         tvm.rawReserve(1e8, 2);
         address _roundAddress = calcRoundAddress(roundStart, roundEnd);
         if (roundAddress != _roundAddress) {
