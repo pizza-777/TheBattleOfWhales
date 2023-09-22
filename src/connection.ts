@@ -17,7 +17,7 @@ export const walletConnection = () => {
         case ('testnet'): {
             return walletConnectionList.testnet
         }
-        default: 'local'
+        default: return 'local'
     }
 }
 
