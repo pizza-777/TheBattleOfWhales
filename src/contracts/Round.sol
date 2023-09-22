@@ -29,10 +29,12 @@ contract Round {
     }
 
     receive() external {
-        if (msg.value >= 1e8 || block.timestamp > roundEnd) {
+        if (msg.value >= 1e8 && block.timestamp > roundEnd) {
             address betAddress = calcBetAddress(msg.sender);
 
             Bet(betAddress).claim{value: 0, flag: 64}();
+        } else {
+            msg.sender.transfer({value: 0, flag: 64});
         }
     }
 
@@ -72,11 +74,10 @@ contract Round {
         require(side == 1 || side == 2, 101, "Wrong side");
         address sender = side == 1 ? RD1 : RD2;
         require(sender == msg.sender, 101, "Only RD contract can send");
-        require(
-            block.timestamp > roundStart && block.timestamp < roundEnd,
-            102,
-            "Wrong time"
-        );
+        // if (block.timestamp < (roundStart + 60) || block.timestamp > roundEnd) {
+        //     player.transfer({value: 0, flag: 64});
+        //     return;
+        // }
         // I don't know is BetContracts exists or not, then trying to deploying it
         address betAddress = deployBetContract(player);
 
@@ -100,11 +101,11 @@ contract Round {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
-        
-        paymentFeeAfterRoundEnded = calcProcessingFee(); 
-        if((int(reward) - int(paymentFeeAfterRoundEnded)) > 0) {
+
+        paymentFeeAfterRoundEnded = calcProcessingFee();
+        if ((int(reward) - int(paymentFeeAfterRoundEnded)) > 0) {
             reward = reward - paymentFeeAfterRoundEnded;
-        }else{
+        } else {
             reward = 0;
         }
 
@@ -113,21 +114,24 @@ contract Round {
 
     function calcProcessingFee() public returns (uint128) {
         //check if payment fee already calcualted
-        if(paymentFeeAfterRoundEnded > 0) return paymentFeeAfterRoundEnded;
-        contractBalanceAfterRoundEnded = address(this).balance - msg.value; 
+        if (paymentFeeAfterRoundEnded > 0) return paymentFeeAfterRoundEnded;
+        contractBalanceAfterRoundEnded = address(this).balance - msg.value;
         //check if enough money for payment without fee
-        if((int(contractBalanceAfterRoundEnded) - 1e8) > int(side1 + side2)) return 1;
+        if ((int(contractBalanceAfterRoundEnded) - 1e8) > int(side1 + side2))
+            return 1;
         //calculate payment fee
-        uint128 lackedPaymentAmount = (side1 + side2) - contractBalanceAfterRoundEnded + 1e7;//1e7 is the minimal remaining contact balance
+        uint128 lackedPaymentAmount = (side1 + side2) -
+            contractBalanceAfterRoundEnded +
+            1e7; //1e7 is the minimal remaining contact balance
         if (side1 == side2) {
-            return math.divc(lackedPaymentAmount, betsOnSide1 + betsOnSide2) ;//ceiled value will be + to remaining contract balance
+            return math.divc(lackedPaymentAmount, betsOnSide1 + betsOnSide2); //ceiled value will be + to remaining contract balance
         }
         if (side1 > side2) {
-            return math.divc(lackedPaymentAmount, betsOnSide1) ;
+            return math.divc(lackedPaymentAmount, betsOnSide1);
         }
 
         if (side2 > side1) {
-            return math.divc(lackedPaymentAmount, betsOnSide2) ;
+            return math.divc(lackedPaymentAmount, betsOnSide2);
         }
     }
 

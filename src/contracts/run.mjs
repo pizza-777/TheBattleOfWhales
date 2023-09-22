@@ -15,6 +15,7 @@ fs.writeFileSync(path.resolve(__dirname, '../config.ts'), `
 export const RD1Address='${rd1Addr}'
 export const RD2Address='${rd2Addr}'
 export const roundDuration=60*6
+export const network: 'localnet' | 'mainnet' | 'testnet' = 'localnet' 
 `);
 
 

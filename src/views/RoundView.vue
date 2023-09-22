@@ -75,9 +75,8 @@ import Vue from 'vue'
 import { RD1Address, RD2Address, network } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet'
 import { sleep } from '@/utils'
-import {roundDuration} from '@/config'
+import { roundDuration } from '@/config'
 import { explorer } from '@/connection'
-import { BIconTelephoneMinusFill } from 'bootstrap-vue'
 
 export default Vue.extend({
   name: 'HomeView',
@@ -114,7 +113,7 @@ export default Vue.extend({
       progressValue: 0,
       roundState: '',
       explorer: '',
-      network: ''
+      network: '',
     }
   },
   methods: {
@@ -126,7 +125,7 @@ export default Vue.extend({
         this.alert = false
         return
       }
-      const amount = this['fishInputAmount' + side as keyof Vue]
+      const amount = this[('fishInputAmount' + side) as keyof Vue]
       if (isNaN(amount) || amount < 1) {
         this.alertMessage = 'Min bet 1 EVER'
         this.alert = true
@@ -135,7 +134,7 @@ export default Vue.extend({
         return
       }
       this.alert = false
-      await bet(side, Number(this['fishInputAmount' + side as keyof Vue]) * 1e9)
+      await bet(side, Number(this[('fishInputAmount' + side) as keyof Vue]) * 1e9)
       // const toolTipId = side == 1 ? 'betBtnLeft' : 'betBtnRight'
       // this.$root.$emit('bv::show::tooltip', toolTipId)
       // await sleep(1000)
@@ -149,11 +148,12 @@ export default Vue.extend({
       const toolTipId = side == 1 ? 'copyBtnLeft' : 'copyBtnRight'
       this.$root.$emit('bv::hide::tooltip', toolTipId)
     },
-    controlNetwork() {    
+    controlNetwork() {
+      console.log('network')
       if (typeof this.$network == 'undefined') return
       if (this.network !== this.$network) {
         this.alert = true
-        this.alertMessage = 'Switch wallet to local network. Current network is ' + this.$network
+        this.alertMessage = 'Switch EverWallet to the ' + this.network + ' network. You wallet now uses ' + this.$network
       } else {
         this.alert = false
       }
@@ -209,7 +209,7 @@ export default Vue.extend({
         this.userBox = true
       })
       getNetwork().then((_network) => {
-        if(typeof _network == 'undefined') return
+        if (typeof _network == 'undefined') return
         this.$network = _network
         this.controlNetwork()
       })
@@ -224,22 +224,31 @@ export default Vue.extend({
     $network() {
       this.controlNetwork()
     },
-    $betsSubscriber() {
+    async $betsSubscriber() {
+      await sleep(2000)
       this.updateBetsData()
+
+      //todo subscribe to bets contract on the flow
+      if (this.userBox) {
+        //the bets to user contract is going up to 5 seconds later
+        await sleep(5000)
+        this.updateBetsData()
+      }
     },
     currentTime(_, currentTime) {
+      if(this.roundEndTimestamp == 0) return;
       //wait minute and update all
       if (currentTime > this.roundEndTimestamp) {
         if (currentTime > this.roundEndTimestamp + 60 * 1000) {
           this.updateAll()
         }
         this.progressValue = 100
-        
+
         this.updateRoundState()
         return
       }
       this.updateRoundState()
-      this.progressValue = 100 - ((this.roundEndTimestamp - currentTime) / 1000 / (roundDuration-60)) * 100 // todo change interval value
+      this.progressValue = 100 - ((this.roundEndTimestamp - currentTime) / 1000 / (roundDuration - 60)) * 100 // todo change interval value
     },
   },
 })
