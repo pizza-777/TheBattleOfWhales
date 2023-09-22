@@ -73,7 +73,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { RD1Address, RD2Address, network } from '@/config'
-import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork } from '@/wallet'
+import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork, setUpSubscriptions, tearDownSubscriptions } from '@/wallet'
 import { sleep } from '@/utils'
 import { roundDuration } from '@/config'
 import { explorer } from '@/connection'
@@ -218,6 +218,10 @@ export default Vue.extend({
       this.alert = false
       this.explorer = explorer()
       this.network = network
+
+      tearDownSubscriptions().then(() => {
+        setUpSubscriptions()
+      })
     },
   },
   watch: {
@@ -225,18 +229,10 @@ export default Vue.extend({
       this.controlNetwork()
     },
     async $betsSubscriber() {
-      await sleep(2000)
       this.updateBetsData()
-
-      //todo subscribe to bets contract on the flow
-      if (this.userBox) {
-        //the bets to user contract is going up to 5 seconds later
-        await sleep(5000)
-        this.updateBetsData()
-      }
     },
     currentTime(_, currentTime) {
-      if(this.roundEndTimestamp == 0) return;
+      if (this.roundEndTimestamp == 0) return
       //wait minute and update all
       if (currentTime > this.roundEndTimestamp) {
         if (currentTime > this.roundEndTimestamp + 60 * 1000) {
