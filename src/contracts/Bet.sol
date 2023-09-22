@@ -29,7 +29,11 @@ contract Bet {
     }
 
     function claim() public {
-        require(msg.sender == round, 103, "Wrong sender");        
+        require(msg.sender == round, 103, "Wrong sender"); //only round can send claim message
+        if(claimedReward == true) {
+            player.transfer({value: 0, flag: 64});
+            return; 
+        }       
         tvm.rawReserve(1e6, 2);
         claimedReward = true;
         Round(round).claimReward{value: 0, flag: 128}(player, side1, side2);
