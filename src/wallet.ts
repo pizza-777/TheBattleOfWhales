@@ -76,15 +76,18 @@ export async function bet(side: 1 | 2, amount: number) {
 }
 
 export async function login() {
+
   const _ever = await ever()
   await _ever.ensureInitialized()
   await everWallet()
+  vueGlobal.permissionsChanged = 'connected'
 }
 
 export async function logout() {
   const _ever = await ever()
   _ever.disconnect()
   _accountInteraction = undefined
+  vueGlobal.permissionsChanged = 'disconnected'
 }
 
 export async function authState(): Promise<boolean | string | undefined> {
@@ -350,7 +353,7 @@ Object.defineProperty(Vue.prototype, '$betsSubscriber', {
 
 export function setUpSubscriptions() {
   //wallet subscriptions
-  ;(async () => {
+  (async () => {
     const provider = ever()
     if ((await (await provider).hasProvider()) == false) return
     const auth = await authState()

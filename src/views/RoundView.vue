@@ -149,7 +149,6 @@ export default Vue.extend({
       this.$root.$emit('bv::hide::tooltip', toolTipId)
     },
     controlNetwork() {
-      console.log('network')
       if (typeof this.$network == 'undefined') return
       if (this.network !== this.$network) {
         this.alert = true
@@ -176,7 +175,7 @@ export default Vue.extend({
         this.userAmountSide1 = data.side1
         this.userAmountSide2 = data.side2
         this.userBox = true
-      })
+      })     
     },
     updateRoundState() {
       if (this.currentTime < this.roundStartTimestamp + 60 * 1000) {
@@ -203,7 +202,11 @@ export default Vue.extend({
         // this.updateFishSize(data.side1, data.side2)
       })
       getUserBetsData().then((data) => {
-        if (typeof data == 'undefined') return
+        console.log(data)
+        if (typeof data == 'undefined') {
+          this.userBox = false
+          return
+        }
         this.userAmountSide1 = data.side1
         this.userAmountSide2 = data.side2
         this.userBox = true
@@ -230,6 +233,9 @@ export default Vue.extend({
     },
     async $betsSubscriber() {
       this.updateBetsData()
+    },
+    $permissionsChanged() {
+      this.updateAll()
     },
     currentTime(_, currentTime) {
       if (this.roundEndTimestamp == 0) return
