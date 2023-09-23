@@ -16,8 +16,8 @@ contract Round {
     uint128 public betsOnSide1 = 0;
     uint128 public betsOnSide2 = 0;
 
-    uint128 contractBalanceAfterRoundEnded = 0;
-    uint128 paymentFeeAfterRoundEnded = 0;
+    uint128 public contractBalanceAfterRoundEnded = 0;
+    uint128 public paymentFeeAfterRoundEnded = 0;
 
     constructor() {
         require(
@@ -117,8 +117,8 @@ contract Round {
         if (paymentFeeAfterRoundEnded > 0) return paymentFeeAfterRoundEnded;
         contractBalanceAfterRoundEnded = address(this).balance - msg.value;
         //check if enough money for payment without fee
-        if ((int(contractBalanceAfterRoundEnded) - 1e8) > int(side1 + side2))
-            return 1;
+        if ((int(contractBalanceAfterRoundEnded) - 1e7) > int(side1 + side2))
+            return 0;
         //calculate payment fee
         uint128 lackedPaymentAmount = (side1 + side2) -
             contractBalanceAfterRoundEnded +
