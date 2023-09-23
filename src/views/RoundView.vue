@@ -7,7 +7,7 @@
         <div id="leftFish" ref="leftFish">🐋</div>
         <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
         <div id="leftFishInputAmount">
-          <b-form-input block v-model="fishInputAmount1"></b-form-input>
+          <b-form-input autocomplete="off" block v-model="fishInputAmount1"></b-form-input>
         </div>
         <div id="leftFishBtn" v-if="userBox">
           <b-button id="betBtnLeft" block variant="outline-primary" @click="_bet(1)">Bet</b-button>
@@ -28,8 +28,8 @@
       <div>
         <div id="rightFish" ref="rightFish">🐋</div>
         <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
-        <div id="leftFishInputAmount">
-          <b-form-input v-model="fishInputAmount2"></b-form-input>
+        <div id="rightFishInputAmount">
+          <b-form-input autocomplete="off" v-model="fishInputAmount2"></b-form-input>
         </div>
         <div id="rightFishBtn" v-if="userBox">
           <b-button id="betBtnRight" variant="outline-primary" @click="_bet(2)">Bet</b-button>
@@ -55,7 +55,10 @@
 
     <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} — {{ roundEnd }}</div>
     <div class="container text-center mt-4">
-      <b-alert mt-4 mb-4 fade :show="alert">{{ alertMessage }}</b-alert>
+      <b-alert mt-4 mb-4 fade :show="systemAlert">{{ systemAlertMessage }}</b-alert>
+    </div>
+    <div class="container text-center mt-4">
+      <b-alert variant="dark" mt-4 mb-4 fade :show="betAlert">{{ betAlertMessage }}</b-alert>
     </div>
     <div v-if="userBox" class="mt-4">
       <div class="text-center text-light mt-4 h5">My bets:</div>
@@ -91,8 +94,10 @@ export default Vue.extend({
       authTrigger: false,
       fishInputAmount1: 0,
       fishInputAmount2: 0,
-      alert: false,
-      alertMessage: '',
+      systemAlert: false,
+      systemAlertMessage: '',
+      betAlert: false,
+      betAlertMessage: '',
       roundStart: '',
       roundEnd: '',
       roundStartTimestamp: 0,
@@ -119,22 +124,22 @@ export default Vue.extend({
   methods: {
     async _bet(side: 1 | 2) {
       if ((await authState()) == false) {
-        this.alert = true
-        this.alertMessage = 'Connect your wallet'
+        this.systemAlert = true
+        this.systemAlertMessage = 'Connect your wallet'
         sleep(5000)
-        this.alert = false
+        this.systemAlert = false
         return
       }
       const amount = this[('fishInputAmount' + side) as keyof Vue]
       if (isNaN(amount) || amount < 1) {
-        this.alertMessage = 'Min bet 1 EVER'
-        this.alert = true
+        this.systemAlertMessage = 'Min bet 1 EVER'
+        this.systemAlert = true
         await sleep(3000)
-        this.alert = false
+        this.systemAlert = false
         return
-      }
-      this.alert = false
-      await bet(side, Number(this[('fishInputAmount' + side) as keyof Vue]) * 1e9)
+      }      
+      await bet(side, Number(amount) * 1e9)
+     // this['fishInputAmount' + side] = 0
       // const toolTipId = side == 1 ? 'betBtnLeft' : 'betBtnRight'
       // this.$root.$emit('bv::show::tooltip', toolTipId)
       // await sleep(1000)
@@ -151,10 +156,10 @@ export default Vue.extend({
     controlNetwork() {
       if (typeof this.$network == 'undefined') return
       if (this.network !== this.$network) {
-        this.alert = true
-        this.alertMessage = 'Switch EverWallet to the ' + this.network + ' network. You wallet now uses ' + this.$network
+        this.systemAlert = true
+        this.systemAlertMessage = 'Switch EverWallet to the ' + this.network + ' network. You wallet now uses ' + this.$network
       } else {
-        this.alert = false
+        this.systemAlert = false
       }
     },
     updateBetsData() {
@@ -175,7 +180,7 @@ export default Vue.extend({
         this.userAmountSide1 = data.side1
         this.userAmountSide2 = data.side2
         this.userBox = true
-      })     
+      })
     },
     updateRoundState() {
       if (this.currentTime < this.roundStartTimestamp + 60 * 1000) {
@@ -202,10 +207,8 @@ export default Vue.extend({
         // this.updateFishSize(data.side1, data.side2)
       })
       getUserBetsData().then((data) => {
-        console.log(data)
         if (typeof data == 'undefined') {
           this.userBox = false
-           this.alert = false
           return
         }
         this.userAmountSide1 = data.side1
@@ -219,7 +222,7 @@ export default Vue.extend({
       })
       this.RD1Address = RD1Address
       this.RD2Address = RD2Address
-      this.alert = false
+      this.systemAlert = false
       this.explorer = explorer()
       this.network = network
 
@@ -234,6 +237,18 @@ export default Vue.extend({
     },
     async $betsSubscriber() {
       this.updateBetsData()
+      const updated = JSON.parse(JSON.stringify(this.$betsSubscriber))
+      if (typeof updated.msg !== 'undefined' && this.roundState == 'Running' ) {
+        this.betAlert = true  
+        const amount = (updated.data.transactions[0].inMessage.value/1e9)
+        const plural = amount >= 2 ? 'S' : ''
+        //todo check if round prepearing
+        this.betAlertMessage = amount + ' EVER' + plural + ' ' + updated.msg
+      }
+      console.log(updated)
+      sleep(5000).then(() => {
+        this.betAlert = false
+      })
     },
     $permissionsChanged() {
       this.updateAll()

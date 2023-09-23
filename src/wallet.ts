@@ -378,8 +378,7 @@ export function setUpSubscriptions() {
           })
         )
         //bet subscription
-        const betAddr = await getBetContractAddress()
-        console.log('bet contract addr', betAddr)
+        const betAddr = await getBetContractAddress()        
         if (betAddr) {
           subscriptionManager.push(
             (await _ever.subscribe('contractStateChanged', { address: betAddr })).on('data', (data) => {
@@ -405,18 +404,17 @@ export function setUpSubscriptions() {
     const provider = _everStandalone
     subscriptionManager.push(
       (await provider.subscribe('transactionsFound', { address: new Address(RD1Address) })).on('data', (data) => {
-        vueGlobal.betsSubscriber = data
+        vueGlobal.betsSubscriber = { msg: ' placed on the LEFT Whale', data }
         console.log('bet1 placed' /*, JSON.stringify(data)*/)
       })
     )
     subscriptionManager.push(
       (await provider.subscribe('transactionsFound', { address: new Address(RD2Address) })).on('data', (data) => {
-        vueGlobal.betsSubscriber = data
+        vueGlobal.betsSubscriber = { msg: ' placed on the RIGHT Whale', data }
         console.log('bet2 placed' /*, JSON.stringify(data)*/)
       })
     )
-
-    //round subscription - does not needed
+   
     const roundTime: any = await getRoundTime()
     const roundAddr: Address = await getRoundContractAddress(roundTime.roundStart, roundTime.roundEnd)
     subscriptionManager.push(
