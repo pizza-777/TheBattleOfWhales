@@ -55,7 +55,7 @@
 
     <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} — {{ roundEnd }}</div>
     <div class="container text-center mt-4">
-      <b-alert mt-4 mb-4 :show="alert">{{ alertMessage }}</b-alert>
+      <b-alert mt-4 mb-4 fade :show="alert">{{ alertMessage }}</b-alert>
     </div>
     <div v-if="userBox" class="mt-4">
       <div class="text-center text-light mt-4 h5">My bets:</div>
@@ -205,6 +205,7 @@ export default Vue.extend({
         console.log(data)
         if (typeof data == 'undefined') {
           this.userBox = false
+           this.alert = false
           return
         }
         this.userAmountSide1 = data.side1
