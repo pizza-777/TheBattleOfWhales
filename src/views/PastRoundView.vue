@@ -21,7 +21,7 @@
       </div>
     </div>
     <div id="userReward" class="container text-center text-light mt-4 mb-4">
-      <div>       
+      <div v-if="userBox">       
         <span class="p-3">Reward ≈ {{ (userReward - fee).toFixed(2) }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
@@ -93,7 +93,7 @@ export default Vue.extend({
       claimDisabled: false,
       claimedReward: false,
       userBetsAddress: '',
-      userBox: true,
+      userBox: false,
       fee:0
     }
   },
