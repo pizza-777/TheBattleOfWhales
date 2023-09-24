@@ -13,11 +13,8 @@ contract Round {
 
     uint128 public side1 = 0;
     uint128 public side2 = 0;
-    uint128 public betsOnSide1 = 0;
-    uint128 public betsOnSide2 = 0;
-
-    uint128 public contractBalanceAfterRoundEnded = 0;
-    uint128 public paymentFeeAfterRoundEnded = 0;
+    uint128 public countTotalBetsONSide1 = 0;
+    uint128 public countTotalBetsONSide2 = 0;
 
     constructor() {
         require(
@@ -86,25 +83,30 @@ contract Round {
 
         if (side == 1) {
             side1 += betValue;
-            betsOnSide1++;
+            countTotalBetsONSide1++;
         } else {
             side2 += betValue;
-            betsOnSide2++;
+            countTotalBetsONSide2++;
         }
     }
 
     function claimReward(
         address player,
         uint128 amountOnSide1,
-        uint128 amountOnSide2
+        uint128 amountOnSide2,
+        uint128 countPlayerBetsSide1,
+        uint128 countPlayerBetsSide2
     ) public {
         require(calcBetAddress(player) == msg.sender, 102, "Wrong bet address");
 
         uint128 reward = calcReward(amountOnSide1, amountOnSide2);
 
-        paymentFeeAfterRoundEnded = calcProcessingFee();
-        if ((int(reward) - int(paymentFeeAfterRoundEnded)) > 0) {
-            reward = reward - paymentFeeAfterRoundEnded;
+        uint128 fee = calcProcessingFee(
+            countPlayerBetsSide1,
+            countPlayerBetsSide2
+        );
+        if ((int(reward) - int(fee)) > 0) {
+            reward = reward - fee;
         } else {
             reward = 0;
         }
@@ -112,26 +114,41 @@ contract Round {
         player.transfer({value: reward, flag: 64});
     }
 
-    function calcProcessingFee() public returns (uint128) {
-        //check if payment fee already calcualted
-        if (paymentFeeAfterRoundEnded > 0) return paymentFeeAfterRoundEnded;
-        contractBalanceAfterRoundEnded = address(this).balance - msg.value;
-        //check if enough money for payment without fee
-        if ((int(contractBalanceAfterRoundEnded) - 1e7) > int(side1 + side2))
-            return 0;
-        //calculate payment fee
-        uint128 lackedPaymentAmount = (side1 + side2) -
-            contractBalanceAfterRoundEnded +
-            1e7; //1e7 is the minimal remaining contact balance
+    function calcProcessingFee(
+        uint128 countPlayerBetsSide1,
+        uint128 countPlayerBetsSide2
+    ) public returns (uint128) {
+        uint128 roundBalance = address(this).balance - msg.value;
+        //check if enough money for payment without fee. 1e7 - remaining balance
+        if ((int(roundBalance) - 1e7) > int(side1 + side2)) return 0;
+        //calculate total payment fee
+        uint128 lackedPaymentAmount = (side1 + side2) - roundBalance + 1e7;
         if (side1 == side2) {
-            return math.divc(lackedPaymentAmount, betsOnSide1 + betsOnSide2); //ceiled value will be + to remaining contract balance
+            //we need to pay attention on player bets quantity, because one player can bet many times and use a lot of gas
+            uint128 _fee = math.divc(
+                lackedPaymentAmount,
+                countTotalBetsONSide1 + countTotalBetsONSide2
+            ) * (countPlayerBetsSide1 + countPlayerBetsSide2);
+            countTotalBetsONSide1 -= countPlayerBetsSide1;
+            countTotalBetsONSide2 -= countPlayerBetsSide2;
+            return _fee;
         }
         if (side1 > side2) {
-            return math.divc(lackedPaymentAmount, betsOnSide1);
+            uint128 _fee = math.divc(
+                lackedPaymentAmount,
+                countTotalBetsONSide1
+            ) * (countPlayerBetsSide1 + countPlayerBetsSide2);
+            countTotalBetsONSide1 -= countPlayerBetsSide1;
+            return _fee;
         }
 
         if (side2 > side1) {
-            return math.divc(lackedPaymentAmount, betsOnSide2);
+            uint128 _fee = math.divc(
+                lackedPaymentAmount,
+                countTotalBetsONSide2
+            ) * (countPlayerBetsSide1 + countPlayerBetsSide2);
+            countTotalBetsONSide2 -= countPlayerBetsSide2;
+            return _fee;
         }
     }
 

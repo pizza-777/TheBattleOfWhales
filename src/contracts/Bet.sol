@@ -12,38 +12,63 @@ contract Bet {
     address public static round;
 
     bool public claimedReward = false;
-    uint32 public count = 0; // quantitiy of bets
-   
+    uint128 public countSide1 = 0; // quantitiy of bets
+    uint128 public countSide2 = 0;
+
     constructor() {
-         require(msg.sender == round, 101, "Only round can deploy this contract");
-         tvm.accept();
+        require(
+            msg.sender == round,
+            101,
+            "Only round can deploy this contract"
+        );
+        tvm.accept();
     }
+
     function storeBet(uint128 amount, uint2 side) public {
         require(msg.sender == round, 102, "Wrong sender");
         tvm.rawReserve(1e7, 2);
-        count++;
-        if (side == 1) side1 += amount;
-        else side2 += amount;
+
+        if (side == 1) {
+            side1 += amount;
+            countSide1++;
+        } else {
+            side2 += amount;
+            countSide2++;
+        }
 
         Round(round).replenish{value: 0, flag: 128}();
     }
 
     function claim() public {
         require(msg.sender == round, 103, "Wrong sender"); //only round can send claim message
-        if(claimedReward == true) {
+        if (claimedReward == true) {
             player.transfer({value: 0, flag: 64});
-            return; 
-        }       
+            return;
+        }
         tvm.rawReserve(1e6, 2);
         claimedReward = true;
-        Round(round).claimReward{value: 0, flag: 128}(player, side1, side2);
+        Round(round).claimReward{value: 0, flag: 128}(
+            player,
+            side1,
+            side2,
+            countSide1,
+            countSide2
+        );
     }
 
     function getBetsData()
         public
         view
-        returns (uint128, uint128, bool, uint32, uint32)
+        returns (uint128, uint128, bool, uint32, uint32, uint128, uint128)
     {
-        return (side1, side2, claimedReward, roundStart, roundEnd);
-    }    
+        return (
+            side1,
+            side2,
+            claimedReward,
+            roundStart,
+            roundEnd,
+            countSide1,
+            countSide2
+        );
+    }
 }

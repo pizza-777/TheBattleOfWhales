@@ -1,4 +1,4 @@
-import { Address, ProviderRpcClient } from 'everscale-inpage-provider'
+import { Address, Contract, ProviderRpcClient } from 'everscale-inpage-provider'
 
 import { RD1Address, RD2Address } from './config'
 
@@ -76,7 +76,6 @@ export async function bet(side: 1 | 2, amount: number) {
 }
 
 export async function login() {
-
   const _ever = await ever()
   await _ever.ensureInitialized()
   await everWallet()
@@ -255,7 +254,7 @@ export async function getUserDataByRound(roundAddress: string) {
 
     const userBetsContract = new provider.Contract(BetContract.abi, new Address(userBetsAddress.value0.toString()))
 
-    const userBetsData: { value0: number; value1: number; value2: string; value3: number; value4: number } = await userBetsContract.methods.getBetsData({} as never).call()
+    const userBetsData: { value0: number; value1: number; value2: string; value3: number; value4: number; value5: number; value6: number } = await userBetsContract.methods.getBetsData({} as never).call()
     return {
       address: userBetsAddress.value0,
       side1: userBetsData.value0,
@@ -263,6 +262,9 @@ export async function getUserDataByRound(roundAddress: string) {
       claimedReward: userBetsData.value2,
       roundStart: userBetsData.value3,
       roundEnd: userBetsData.value4,
+      countSide1: userBetsData.value5,
+      countSide2: userBetsData.value6,
+
     }
   } catch (e) {
     console.warn('getUserDataByRound error:' + JSON.stringify(e))
@@ -278,14 +280,22 @@ export async function getRoundDataByAddress(address: string) {
   const totalBets: { value0: string; value1: string } = await contract.methods.getBetsData({} as never).call()
   const start: { roundStart: number } = await contract.methods.roundStart({} as never).call()
   const end: { roundEnd: number } = await contract.methods.roundEnd({} as never).call()
-  const fee: { value0: number } = await contract.methods.calcProcessingFee({} as never).call()
+  // const fee: { value0: number } = await contract.methods.calcProcessingFee({} as never).call()
   return {
     side1: Number(totalBets.value0) / 1e9,
     side2: Number(totalBets.value1) / 1e9,
     roundStart: start.roundStart,
     roundEnd: end.roundEnd,
-    fee: Number(fee.value0) / 1e9,
+    fee: 0, //Number(fee.value0) / 1e9,
   }
+}
+
+export async function calcFee(roundAddr: string, userBetsOnSide1: number, userBetsOnSide2: number): Promise<number> {
+  const provider = _everStandalone
+  const roundContract = new provider.Contract(RoundContract.abi, new Address(roundAddr))
+
+  const fee: {value0: number} = await roundContract.methods.calcProcessingFee({ countPlayerBetsSide1: userBetsOnSide1, countPlayerBetsSide2: Number(userBetsOnSide2) } as never).call() 
+  return fee.value0
 }
 
 export async function claim(addr: Address) {
@@ -378,7 +388,7 @@ export function setUpSubscriptions() {
           })
         )
         //bet subscription
-        const betAddr = await getBetContractAddress()        
+        const betAddr = await getBetContractAddress()
         if (betAddr) {
           subscriptionManager.push(
             (await _ever.subscribe('contractStateChanged', { address: betAddr })).on('data', (data) => {
@@ -414,7 +424,7 @@ export function setUpSubscriptions() {
         console.log('bet2 placed' /*, JSON.stringify(data)*/)
       })
     )
-   
+
     const roundTime: any = await getRoundTime()
     const roundAddr: Address = await getRoundContractAddress(roundTime.roundStart, roundTime.roundEnd)
     subscriptionManager.push(

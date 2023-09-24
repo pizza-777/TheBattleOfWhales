@@ -26,7 +26,7 @@
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
         <b-icon icon="question-circle" id="rewardTip" aria-label="Help"></b-icon>
-        <b-tooltip target="rewardTip" variant="dark">{{fee.toFixed(2)}} Ever fee included</b-tooltip>
+        <b-tooltip target="rewardTip" variant="dark">{{fee}} Ever fee included</b-tooltip>
       </div>
       <div id="claimAddr" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
         <b-input-group size="sm">
@@ -45,7 +45,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { getRoundDataByAddress, claim, getUserDataByRound } from '@/wallet.ts'
+import { getRoundDataByAddress, claim, getUserDataByRound, calcFee } from '@/wallet.ts'
 import { calcUserReward, sleep } from '@/utils'
 
 export default Vue.extend({
@@ -57,8 +57,8 @@ export default Vue.extend({
     this.roundEnd = new Date(data.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(data.roundEnd * 1000).toLocaleTimeString()
     this.totalAmountSide1 = data.side1
     this.totalAmountSide2 = data.side2
-    this.fee = data.fee
-    getUserDataByRound(this.roundContractAddress).then((data) => {
+    //this.fee = data.fee
+    getUserDataByRound(this.roundContractAddress).then(async(data) => {
       if (typeof data == 'undefined') {
         return
       }
@@ -69,6 +69,10 @@ export default Vue.extend({
       this.claimDisabled = this.claimedReward
       this.userReward = calcUserReward(this.userAmountSide1, this.userAmountSide2, this.totalAmountSide1, this.totalAmountSide2)
       this.userBox = true
+      console.log(this.roundContractAddress, data.countSide1, data.countSide2)
+      this.fee = await calcFee(this.roundContractAddress, data.countSide1, data.countSide2)        
+      this.fee = (this.fee/1e9).toFixed(2)
+      
     })
   },
   data() {
