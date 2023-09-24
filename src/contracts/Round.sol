@@ -16,6 +16,8 @@ contract Round {
     uint128 public countTotalBetsONSide1 = 0;
     uint128 public countTotalBetsONSide2 = 0;
 
+    uint128 public finalRoundBalance = 0;
+
     constructor() {
         require(
             msg.sender == RD1 || msg.sender == RD2,
@@ -118,7 +120,7 @@ contract Round {
         uint128 countPlayerBetsSide1,
         uint128 countPlayerBetsSide2
     ) public returns (uint128) {
-        uint128 roundBalance = address(this).balance - msg.value;
+        uint128 roundBalance = getSetFinalRoundBalance();
         //check if enough money for payment without fee. 1e7 - remaining balance
         if ((int(roundBalance) - 1e7) > int(side1 + side2)) return 0;
         //calculate total payment fee
@@ -129,16 +131,13 @@ contract Round {
                 lackedPaymentAmount,
                 countTotalBetsONSide1 + countTotalBetsONSide2
             ) * (countPlayerBetsSide1 + countPlayerBetsSide2);
-            countTotalBetsONSide1 -= countPlayerBetsSide1;
-            countTotalBetsONSide2 -= countPlayerBetsSide2;
             return _fee;
         }
         if (side1 > side2) {
             uint128 _fee = math.divc(
                 lackedPaymentAmount,
                 countTotalBetsONSide1
-            ) * (countPlayerBetsSide1 + countPlayerBetsSide2);
-            countTotalBetsONSide1 -= countPlayerBetsSide1;
+            ) * countPlayerBetsSide1;
             return _fee;
         }
 
@@ -146,8 +145,7 @@ contract Round {
             uint128 _fee = math.divc(
                 lackedPaymentAmount,
                 countTotalBetsONSide2
-            ) * (countPlayerBetsSide1 + countPlayerBetsSide2);
-            countTotalBetsONSide2 -= countPlayerBetsSide2;
+            ) * countPlayerBetsSide2;
             return _fee;
         }
     }
@@ -166,6 +164,12 @@ contract Round {
         if (side2 > side1) {
             return amountOnSide2 + (amountOnSide2 * side1) / side2;
         }
+    }
+
+    function getSetFinalRoundBalance() public returns (uint128) {
+        if (finalRoundBalance == 0)
+            finalRoundBalance = address(this).balance - msg.value;
+        return finalRoundBalance;
     }
 
     function getBetsData() public view returns (uint128, uint128) {
