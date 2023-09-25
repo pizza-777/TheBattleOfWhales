@@ -5,7 +5,11 @@
     <div class="container mt-5 mb-5" id="fishBox">
       <div>
         <div id="leftFish" ref="leftFish">🐋</div>
-        <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
+        <div id="totalAmountSide1" class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
+
+        <b-tooltip :show.sync="showTooltipLeft" target="totalAmountSide1" placement="top">
+          {{ amountTooltipMsgLeft }}
+        </b-tooltip>
         <div id="leftFishInputAmount">
           <b-form-input autocomplete="off" block v-model="fishInputAmount1"></b-form-input>
         </div>
@@ -27,7 +31,10 @@
       </div>
       <div>
         <div id="rightFish" ref="rightFish">🐋</div>
-        <div class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
+        <div id="totalAmountSide2" class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
+        <b-tooltip :show.sync="showTooltipRight" target="totalAmountSide2" placement="top">
+          {{ amountTooltipMsgRight }}
+        </b-tooltip>
         <div id="rightFishInputAmount">
           <b-form-input autocomplete="off" v-model="fishInputAmount2"></b-form-input>
         </div>
@@ -119,6 +126,11 @@ export default Vue.extend({
       roundState: '',
       explorer: '',
       network: '',
+      prevTotalData: { side1: 0, side2: 0 },
+      amountTooltipMsgLeft: '',
+      amountTooltipMsgRight: '',
+      showTooltipLeft: false,
+      showTooltipRight: false,
     }
   },
   methods: {
@@ -137,9 +149,9 @@ export default Vue.extend({
         await sleep(3000)
         this.systemAlert = false
         return
-      }      
+      }
       await bet(side, Number(amount) * 1e9)
-     // this['fishInputAmount' + side] = 0
+      // this['fishInputAmount' + side] = 0
       // const toolTipId = side == 1 ? 'betBtnLeft' : 'betBtnRight'
       // this.$root.$emit('bv::show::tooltip', toolTipId)
       // await sleep(1000)
@@ -204,7 +216,7 @@ export default Vue.extend({
       getBetsData().then((data) => {
         this.totalAmountSide1 = data.side1
         this.totalAmountSide2 = data.side2
-        // this.updateFishSize(data.side1, data.side2)
+        this.prevTotalData = { side1: data.side1, side2: data.side2 }
       })
       getUserBetsData().then((data) => {
         if (typeof data == 'undefined') {
@@ -235,20 +247,30 @@ export default Vue.extend({
     $network() {
       this.controlNetwork()
     },
-    async $betsSubscriber() {
-      this.updateBetsData()
-      const updated = JSON.parse(JSON.stringify(this.$betsSubscriber))
-      if (typeof updated.msg !== 'undefined' && this.roundState == 'Running' ) {
-        this.betAlert = true  
-        const amount = (updated.data.transactions[0].inMessage.value/1e9)
-        const plural = amount >= 2 ? 'S' : ''
-        //todo check if round prepearing
-        this.betAlertMessage = amount + ' EVER' + plural + ' ' + updated.msg
+    async $roundTransactions() {
+      if (this.roundState !== 'Running') return
+
+      const currTotalData: { side1: number; side2: number } = await getUserBetsData()
+      console.log(currTotalData)
+      let amount: number
+
+      if (currTotalData.side1 > this.prevTotalData.side1) {
+        amount = currTotalData.side1 - this.prevTotalData.side1
+        this.amountTooltipMsgLeft = '+' + amount.toString()
+        this.showTooltipLeft = true
+        await sleep(2e3)
+        this.showTooltipLeft = false
       }
-      console.log(updated)
-      sleep(5000).then(() => {
-        this.betAlert = false
-      })
+      if (currTotalData.side2 > this.prevTotalData.side2) {
+        amount = currTotalData.side2 - this.prevTotalData.side2
+        this.amountTooltipMsgRight = '+' + amount.toString()
+        this.showTooltipRight = true
+        await sleep(2e3)
+        this.showTooltipRight = false
+      }
+      this.prevTotalData = currTotalData
+
+      this.updateBetsData()
     },
     $permissionsChanged() {
       this.updateAll()

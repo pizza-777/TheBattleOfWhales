@@ -1,4 +1,4 @@
-import { Address, Contract, ProviderRpcClient } from 'everscale-inpage-provider'
+import { Address, ProviderRpcClient } from 'everscale-inpage-provider'
 
 import { RD1Address, RD2Address } from './config'
 
@@ -323,9 +323,8 @@ export async function getNetwork(): Promise<string | undefined> {
 
 //VUE GLOBALS VARIABLES
 const vueGlobal = Vue.observable({
-  network: '',
-  betsSubscriber: {},
-  permissionsChanged: {},
+  network: '', permissionsChanged: {},
+  RD1: {}, RD2: {}, betState: {}, betTransactions: {},roundState: {}, roundTransactions: {}
 })
 
 Object.defineProperty(Vue.prototype, '$network', {
@@ -347,14 +346,50 @@ Object.defineProperty(Vue.prototype, '$permissionsChanged', {
     vueGlobal.permissionsChanged = value
   },
 })
-
-Object.defineProperty(Vue.prototype, '$betsSubscriber', {
+Object.defineProperty(Vue.prototype, '$RD1', {
   get() {
-    return vueGlobal.betsSubscriber
+    return vueGlobal.RD1
   },
 
   set(value) {
-    vueGlobal.betsSubscriber = value
+    vueGlobal.RD1 = value
+  },
+})
+
+Object.defineProperty(Vue.prototype, '$RD2', {
+  get() {
+    return vueGlobal.RD2
+  },
+
+  set(value) {
+    vueGlobal.RD2 = value
+  },
+})
+Object.defineProperty(Vue.prototype, '$betTransactions', {
+  get() {
+    return vueGlobal.betState
+  },
+
+  set(value) {
+    vueGlobal.betState = value
+  },
+})
+Object.defineProperty(Vue.prototype, '$roundState', {
+  get() {
+    return vueGlobal.roundState
+  },
+
+  set(value) {
+    vueGlobal.roundState = value
+  },
+})
+Object.defineProperty(Vue.prototype, '$roundTransactions', {
+  get() {
+    return vueGlobal.roundTransactions
+  },
+
+  set(value) {
+    vueGlobal.roundTransactions = value
   },
 })
 
@@ -392,13 +427,13 @@ export function setUpSubscriptions() {
         if (betAddr) {
           subscriptionManager.push(
             (await _ever.subscribe('contractStateChanged', { address: betAddr })).on('data', (data) => {
-              vueGlobal.betsSubscriber = data
+              vueGlobal.betState = data
               console.log('betContract state changed' /*, JSON.stringify(data)*/)
             })
           )
           subscriptionManager.push(
             (await _ever.subscribe('transactionsFound', { address: betAddr })).on('data', (data) => {
-              vueGlobal.betsSubscriber = data
+              vueGlobal.betTransactions = data
               console.log('bet transaction fount' /*, JSON.stringify(data)*/)
             })
           )
@@ -414,13 +449,13 @@ export function setUpSubscriptions() {
     const provider = _everStandalone
     subscriptionManager.push(
       (await provider.subscribe('transactionsFound', { address: new Address(RD1Address) })).on('data', (data) => {
-        vueGlobal.betsSubscriber = { msg: ' placed on the LEFT Whale', data }
+        vueGlobal.RD1 = data
         console.log('bet1 placed' /*, JSON.stringify(data)*/)
       })
     )
     subscriptionManager.push(
       (await provider.subscribe('transactionsFound', { address: new Address(RD2Address) })).on('data', (data) => {
-        vueGlobal.betsSubscriber = { msg: ' placed on the RIGHT Whale', data }
+        vueGlobal.RD2 = data
         console.log('bet2 placed' /*, JSON.stringify(data)*/)
       })
     )
@@ -429,13 +464,13 @@ export function setUpSubscriptions() {
     const roundAddr: Address = await getRoundContractAddress(roundTime.roundStart, roundTime.roundEnd)
     subscriptionManager.push(
       (await provider.subscribe('contractStateChanged', { address: roundAddr })).on('data', (data) => {
-        vueGlobal.betsSubscriber = data
+        vueGlobal.roundState = data
         console.log('round contract state changed' /*, JSON.stringify(data)*/)
       })
     )
     subscriptionManager.push(
       (await provider.subscribe('transactionsFound', { address: roundAddr })).on('data', (data) => {
-        vueGlobal.betsSubscriber = data
+        vueGlobal.roundTransactions = data
         console.log('round transacton found' /*, JSON.stringify(data)*/)
       })
     )
