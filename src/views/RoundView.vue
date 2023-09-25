@@ -64,6 +64,7 @@
     <div class="container text-center mt-4">
       <b-alert mt-4 mb-4 fade :show="systemAlert">{{ systemAlertMessage }}</b-alert>
     </div>
+    <BaseNetwork></BaseNetwork>
     <div class="container text-center mt-4">
       <b-alert variant="dark" mt-4 mb-4 fade :show="betAlert">{{ betAlertMessage }}</b-alert>
     </div>
@@ -82,10 +83,9 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { RD1Address, RD2Address, network } from '@/config'
+import { RD1Address, RD2Address, roundDuration } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork, setUpSubscriptions, tearDownSubscriptions } from '@/wallet'
 import { sleep } from '@/utils'
-import { roundDuration } from '@/config'
 import { explorer } from '@/connection'
 
 export default Vue.extend({
@@ -125,7 +125,6 @@ export default Vue.extend({
       progressValue: 0,
       roundState: '',
       explorer: '',
-      network: '',
       prevTotalData: { side1: 0, side2: 0 },
       amountTooltipMsgLeft: '',
       amountTooltipMsgRight: '',
@@ -164,15 +163,6 @@ export default Vue.extend({
       await sleep(1000)
       const toolTipId = side == 1 ? 'copyBtnLeft' : 'copyBtnRight'
       this.$root.$emit('bv::hide::tooltip', toolTipId)
-    },
-    controlNetwork() {
-      if (typeof this.$network == 'undefined') return
-      if (this.network !== this.$network) {
-        this.systemAlert = true
-        this.systemAlertMessage = 'Switch EverWallet to the ' + this.network + ' network. You wallet now uses ' + this.$network
-      } else {
-        this.systemAlert = false
-      }
     },
     updateBetsData() {
       getRoundTime().then((time) => {
@@ -227,16 +217,10 @@ export default Vue.extend({
         this.userAmountSide2 = data.side2
         this.userBox = true
       })
-      getNetwork().then((_network) => {
-        if (typeof _network == 'undefined') return
-        this.$network = _network
-        this.controlNetwork()
-      })
       this.RD1Address = RD1Address
       this.RD2Address = RD2Address
       this.systemAlert = false
       this.explorer = explorer()
-      this.network = network
 
       tearDownSubscriptions().then(() => {
         setUpSubscriptions()
@@ -244,9 +228,6 @@ export default Vue.extend({
     },
   },
   watch: {
-    $network() {
-      this.controlNetwork()
-    },
     async $roundTransactions() {
       if (this.roundState !== 'Running') return
 
