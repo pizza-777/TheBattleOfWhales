@@ -10,7 +10,7 @@
         <b-tooltip :show.sync="showTooltipLeft" target="totalAmountSide1" placement="top">
           {{ amountTooltipMsgLeft }}
         </b-tooltip>
-        <div id="leftFishInputAmount">
+        <div id="leftFishInputAmount" v-if="userBox">
           <b-form-input autocomplete="off" block v-model="fishInputAmount1"></b-form-input>
         </div>
         <div id="leftFishBtn" v-if="userBox">
@@ -35,7 +35,7 @@
         <b-tooltip :show.sync="showTooltipRight" target="totalAmountSide2" placement="top">
           {{ amountTooltipMsgRight }}
         </b-tooltip>
-        <div id="rightFishInputAmount">
+        <div id="rightFishInputAmount" v-if="userBox">
           <b-form-input autocomplete="off" v-model="fishInputAmount2"></b-form-input>
         </div>
         <div id="rightFishBtn" v-if="userBox">
@@ -133,11 +133,25 @@ export default Vue.extend({
     }
   },
   methods: {
-    async _bet(side: 1 | 2) {
+    async _bet(side: 1 | 2) {     
       if ((await authState()) == false) {
         this.systemAlert = true
         this.systemAlertMessage = 'Connect your wallet'
-        sleep(5000)
+        await sleep(5000)
+        this.systemAlert = false
+        return
+      }
+      if(this.roundState == 'Finished'){
+        this.systemAlert = true
+        this.systemAlertMessage = 'This round is finished. The next round will be in one minute'
+        await sleep(5000)
+        this.systemAlert = false
+        return
+      }
+      if(this.roundState == 'Prepearing...'){
+        this.systemAlert = true
+        this.systemAlertMessage = 'This round is prepearing now. The next round will be in one minute'
+        await sleep(5000)
         this.systemAlert = false
         return
       }
