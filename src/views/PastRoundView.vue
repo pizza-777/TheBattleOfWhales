@@ -21,12 +21,12 @@
       </div>
     </div>
     <div id="userReward" class="container text-center text-light mt-4 mb-4">
-      <div v-if="userBox">       
+      <div v-if="userBox">
         <span class="p-3">Reward ≈ {{ (userReward - fee).toFixed(2) }} EVER</span>
         <b-button v-show="claimedReward" disabled variant="outline-primary">Claimed</b-button>
         <b-button v-show="claimedReward == false" :disabled="claimDisabled" variant="outline-primary" @click="_claim()">Claim</b-button>
         <b-icon icon="question-circle" id="rewardTip" aria-label="Help"></b-icon>
-        <b-tooltip target="rewardTip" variant="dark">{{fee}} Ever fee included</b-tooltip>
+        <b-tooltip target="rewardTip" variant="dark">{{ fee }} Ever fee included</b-tooltip>
       </div>
       <div id="claimAddr" class="mt-3 col-md-6 mx-auto mb-4 mt-4">
         <b-input-group size="sm">
@@ -39,8 +39,9 @@
           </b-input-group-append>
         </b-input-group>
       </div>
-    </div> 
-    <BaseFooter></BaseFooter>
+    </div>
+    <base-network></base-network>
+    <base-footer></base-footer>
   </div>
 </template>
 <script lang="ts">
@@ -58,7 +59,7 @@ export default Vue.extend({
     this.totalAmountSide1 = data.side1
     this.totalAmountSide2 = data.side2
     //this.fee = data.fee
-    getUserDataByRound(this.roundContractAddress).then(async(data) => {
+    getUserDataByRound(this.roundContractAddress).then(async (data) => {
       if (typeof data == 'undefined') {
         return
       }
@@ -70,9 +71,8 @@ export default Vue.extend({
       this.userReward = calcUserReward(this.userAmountSide1, this.userAmountSide2, this.totalAmountSide1, this.totalAmountSide2)
       this.userBox = true
       console.log(this.roundContractAddress, data.countSide1, data.countSide2)
-      this.fee = await calcFee(this.roundContractAddress, data.countSide1, data.countSide2)        
-      this.fee = (this.fee/1e9).toFixed(2)
-      
+      this.fee = await calcFee(this.roundContractAddress, data.countSide1, data.countSide2)
+      this.fee = (this.fee / 1e9).toFixed(2)
     })
   },
   data() {
@@ -94,7 +94,7 @@ export default Vue.extend({
       claimedReward: false,
       userBetsAddress: '',
       userBox: false,
-      fee:0
+      fee: 0,
     }
   },
   methods: {
@@ -126,7 +126,8 @@ export default Vue.extend({
   display: flex;
   justify-content: space-around;
 }
-#claimTip, #rewardTip {
+#claimTip,
+#rewardTip {
   margin-left: 0.5em;
 }
 #copyBtnClaim {
