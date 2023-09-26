@@ -46,7 +46,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import { getRoundDataByAddress, claim, getUserDataByRound, calcFee } from '@/wallet.ts'
+import { getRoundDataByAddress, claim, getUserDataByRound, calcFee } from '@/wallet'
 import { calcUserReward, sleep } from '@/utils'
 
 export default Vue.extend({
@@ -72,7 +72,7 @@ export default Vue.extend({
       this.userBox = true
       console.log(this.roundContractAddress, data.countSide1, data.countSide2)
       this.fee = await calcFee(this.roundContractAddress, data.countSide1, data.countSide2)
-      this.fee = (this.fee / 1e9).toFixed(2)
+      this.fee = Number((this.fee / 1e9).toFixed(2))
     })
   },
   data() {
@@ -82,11 +82,11 @@ export default Vue.extend({
       fishInputAmount2: 0,
       alert: false,
       alertMessage: '',
-      roundStart: null,
-      roundEnd: null,
+      roundStart: '',
+      roundEnd: '',
       roundContractAddress: '',
-      totalAmountSide1: null,
-      totalAmountSide2: null,
+      totalAmountSide1: 0,
+      totalAmountSide2: 0,
       userAmountSide1: 0,
       userAmountSide2: 0,
       userReward: 0,
@@ -103,7 +103,8 @@ export default Vue.extend({
       if (typeof response !== 'undefined') this.claimedReward = true
     },
     async _copy() {
-      this.$refs.claimAddr.focus()
+      if(typeof this.$refs.claimAddr == 'undefined') return
+      (this.$refs.claimAddr as HTMLElement).focus()
       document.execCommand('copy')
       await sleep(1000)
       this.$root.$emit('bv::hide::tooltip', 'copyBtnClaim')

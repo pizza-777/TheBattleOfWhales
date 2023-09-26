@@ -84,7 +84,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { RD1Address, RD2Address, roundDuration } from '@/config'
-import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, getNetwork, setUpSubscriptions, tearDownSubscriptions } from '@/wallet'
+import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, setUpSubscriptions, tearDownSubscriptions } from '@/wallet'
 import { sleep } from '@/utils'
 import { explorer } from '@/connection'
 
@@ -163,12 +163,7 @@ export default Vue.extend({
         this.systemAlert = false
         return
       }
-      await bet(side, Number(amount) * 1e9)
-      // this['fishInputAmount' + side] = 0
-      // const toolTipId = side == 1 ? 'betBtnLeft' : 'betBtnRight'
-      // this.$root.$emit('bv::show::tooltip', toolTipId)
-      // await sleep(1000)
-      // this.$root.$emit('bv::hide::tooltip', toolTipId)
+      await bet(side, Number(amount) * 1e9)     
     },
     async _copy(side: number) {
       if (side == 1) (this.$refs.leftAddr as HTMLInputElement).focus()
@@ -245,8 +240,8 @@ export default Vue.extend({
     async $roundTransactions() {
       if (this.roundState !== 'Running') return
 
-      const currTotalData: { side1: number; side2: number } = await getUserBetsData()
-      console.log(currTotalData)
+      const currTotalData: { side1: number; side2: number } | undefined = await getUserBetsData()
+      if(typeof currTotalData == 'undefined') return
       let amount: number
 
       if (currTotalData.side1 > this.prevTotalData.side1) {
@@ -255,13 +250,15 @@ export default Vue.extend({
         this.showTooltipLeft = true
         await sleep(2e3)
         this.showTooltipLeft = false
-      }
+      }else
       if (currTotalData.side2 > this.prevTotalData.side2) {
         amount = currTotalData.side2 - this.prevTotalData.side2
         this.amountTooltipMsgRight = '+' + amount.toString()
         this.showTooltipRight = true
         await sleep(2e3)
         this.showTooltipRight = false
+      }else{
+        return
       }
       this.prevTotalData = currTotalData
 

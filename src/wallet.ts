@@ -254,7 +254,7 @@ export async function getUserDataByRound(roundAddress: string) {
 
     const userBetsContract = new provider.Contract(BetContract.abi, new Address(userBetsAddress.value0.toString()))
 
-    const userBetsData: { value0: number; value1: number; value2: string; value3: number; value4: number; value5: number; value6: number } = await userBetsContract.methods.getBetsData({} as never).call()
+    const userBetsData: { value0: number; value1: number; value2: boolean; value3: number; value4: boolean; value5: number; value6: number } = await userBetsContract.methods.getBetsData({} as never).call()
     return {
       address: userBetsAddress.value0,
       side1: userBetsData.value0,
@@ -298,10 +298,10 @@ export async function calcFee(roundAddr: string, userBetsOnSide1: number, userBe
   return fee.value0
 }
 
-export async function claim(addr: Address) {
+export async function claim(addr: string) {
   const everProvider = await ever()
   const accountInteraction = await everWallet()
-  const round = new everProvider.Contract(RoundContract.abi, addr)
+  const round = new everProvider.Contract(RoundContract.abi, new Address(addr))
   try {
     return await everProvider.sendMessage({
       sender: accountInteraction.address,
