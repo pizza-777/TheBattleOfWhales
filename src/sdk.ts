@@ -1,8 +1,11 @@
 import { TonClient } from '@eversdk/core'
-import { libWeb } from '@eversdk/lib-web'
+import { libWeb, libWebSetup } from '@eversdk/lib-web'
 import RoundContract from './contracts/RoundContract'
-import {sdk} from './connection'
+import { sdk } from './connection'
 
+libWebSetup({
+  binaryURL: "./eversdk.wasm",
+});
 // Application initialization
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
