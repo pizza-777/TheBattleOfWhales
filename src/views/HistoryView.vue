@@ -22,13 +22,14 @@ import { getRoundDataByAddress } from '@/wallet'
 export default Vue.extend({
   name: 'HomeView',
   mounted() {
-    getRounds().then(async (rounds) => {
-      rounds = await Promise.all(
-        rounds.map(async (round) => {
+    getRounds().then(async (data) => {
+      if(typeof data == 'undefined') return
+      let rounds = await Promise.all(
+        data.map(async (round) => {
           const roundData = await getRoundDataByAddress(round.id)
           return {
             Ended: new Date(roundData.roundEnd * 1000).toLocaleDateString() + ' ' + new Date(roundData.roundStart * 1000).toLocaleTimeString(),
-            Address: '<a href="/#/round/' + round.id + '">' + round.id + '</a>',
+            Address: '<a href="./#/round/' + round.id + '">' + round.id + '</a>',
             Total: Math.floor(roundData.side1 + roundData.side2),
             RoundEndTimestamp: roundData.roundEnd,
           }
@@ -37,14 +38,14 @@ export default Vue.extend({
       rounds = rounds.filter((r) => {      
         return (r.RoundEndTimestamp * 1000) < Date.now()
       })
-      this.rounds = rounds.sort((a, b)=> b.RoundEndTimestamp - a.RoundEndTimestamp)  
+      this.rounds = rounds.sort((a, b)=> b.RoundEndTimestamp - a.RoundEndTimestamp)
     })
   },
   data() {
     return {
       authTrigger: false,
       fields: ['Ended', 'Address', 'Total'],
-      rounds: [],
+      rounds: [] as Array<{Ended: string, Address: string, Total: number, RoundEndTimestamp: number}>,
       perPage: 10,
       currentPage: 1,
     }

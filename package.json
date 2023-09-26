@@ -5,7 +5,8 @@
   "scripts": {
     "d": "cd ./src/contracts \n zx ./wrc.mjs \n zx ./run.mjs",
     "s": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "dev": "vue-cli-service build -mode development",
+    "prod": "vue-cli-service build -mode production",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
