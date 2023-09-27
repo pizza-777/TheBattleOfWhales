@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div><BaseAuth :authProp="authTrigger" /></div>
     <div v-if="rounds.length == 0" class="text-center text-light h4">No past rounds yet</div>
     <div v-else class="text-center text-light h4">Past rounds</div>
     <div v-if="rounds.length > 0"  class="container mt-4 mb-4">      
@@ -11,7 +10,6 @@
       </b-table>
       <b-pagination  align="center" v-model="currentPage" :total-rows="rows" :per-page="perPage"></b-pagination>
     </div>
-  <BaseFooter></BaseFooter>
   </div>
 </template>
 <script lang="ts">

@@ -6,7 +6,6 @@
       <b-list-group-item class="lgi">Claim your reward when the round ended</b-list-group-item>
       <b-list-group-item class="lgi">New rounds start every 6 hours</b-list-group-item>
     </b-list-group>
-    <BaseFooter></BaseFooter>
   </div>
 </template>
 <style scoped>

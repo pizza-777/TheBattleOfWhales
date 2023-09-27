@@ -1,7 +1,5 @@
 <template>
   <div>
-    <div><BaseAuth :authProp="authTrigger" /></div>
-    <BaseTitle></BaseTitle>
     <div class="container mt-5 mb-5" id="fishBox">
       <div style="margin-right: 1em;">
         <div id="leftFish" ref="leftFish">🐋</div>
@@ -78,7 +76,6 @@
     <div id="roundContract" class="container text-center text-light mt-4 footer">
       Round contract: <b-link class="link-light" :href="explorer + '/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
-    <BaseFooter></BaseFooter>
   </div>
 </template>
 <script lang="ts">

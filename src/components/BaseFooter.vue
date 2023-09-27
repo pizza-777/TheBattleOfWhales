@@ -33,17 +33,22 @@
 <script lang="ts">
 import Vue from 'vue'
 //sticky footer 
-window.onload = () => {
-  const bodyH = document.body.scrollHeight
-  const screenH = screen.availHeight
+// create an Observer instance
+const resizeObserver = new ResizeObserver(entries => {
+  console.log('Body height changed:', entries[0].target.clientHeight)
   const footer = document.getElementById('footer')
-  console.log(footer)
-  if (bodyH > screenH) {
-    footer.style.position = 'relative'
-  } else {
-    footer.style.position = 'absolute'
-  }
-}
+  const bodyH = document.body.scrollHeight + 100
+  const screenH = screen.availHeight
+  if (footer)
+    if (bodyH > screenH) {
+      footer.style.position = 'relative'
+    } else {
+      footer.style.position = 'absolute'
+    }
+})
+
+// start observing a DOM node
+resizeObserver.observe(document.body)
 
 export default Vue.extend({
   name: 'BaseFooter',

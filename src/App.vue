@@ -1,6 +1,9 @@
 <template>
   <div id="app">
+    <div><BaseAuth :authProp="authTrigger" /></div>
+    <BaseTitle></BaseTitle>
     <router-view/>
+    <base-footer></base-footer>
   </div>
 </template>
 

@@ -1,7 +1,5 @@
 <template>
   <div>
-    <div><BaseAuth :authProp="authTrigger" /></div>
-    <BaseTitle></BaseTitle>
     <div class="container mt-5" id="fishBox">
       <div>
         <div id="leftFish">🐋</div>
@@ -41,7 +39,6 @@
       </div>
     </div>
     <base-network></base-network>
-    <base-footer></base-footer>
   </div>
 </template>
 <script lang="ts">
