@@ -15,10 +15,4 @@
   color: white;
   background-color: rgba(0, 0, 0, 0);
 }
-#footer {
-  position: absolute;
-  height: 100px;
-  bottom: 0;
-  width: 100%;
-}
 </style>

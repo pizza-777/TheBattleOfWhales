@@ -9,7 +9,7 @@ module.exports = defineConfig({
     }
   },
   transpileDependencies: true,
-  publicPath: process.env.NODE_ENV === 'production' ? '/fishBattle/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/TheBattleOfWhales/' : '/',
   configureWebpack: {
     plugins: [
       new CopyPlugin(

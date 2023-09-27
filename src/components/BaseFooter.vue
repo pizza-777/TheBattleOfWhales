@@ -32,6 +32,18 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
+//sticky footer 
+window.onload = () => {
+  const bodyH = document.body.scrollHeight
+  const screenH = screen.availHeight
+  const footer = document.getElementById('footer')
+  console.log(footer)
+  if (bodyH > screenH) {
+    footer.style.position = 'relative'
+  } else {
+    footer.style.position = 'absolute'
+  }
+}
 
 export default Vue.extend({
   name: 'BaseFooter',
@@ -45,7 +57,6 @@ export default Vue.extend({
 <style scoped>
 #footer {
   background-color: rgb(93, 93, 97, 0.1) !important;
-  position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -53,5 +64,9 @@ export default Vue.extend({
 
 #footer-links {
   color: rgba(255, 255, 255, 0.5) !important;
+}
+
+td {
+  width: 33.3%;
 }
 </style>

@@ -3,7 +3,7 @@
     <div><BaseAuth :authProp="authTrigger" /></div>
     <BaseTitle></BaseTitle>
     <div class="container mt-5 mb-5" id="fishBox">
-      <div>
+      <div style="margin-right: 1em;">
         <div id="leftFish" ref="leftFish">🐋</div>
         <div id="totalAmountSide1" class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
 
@@ -75,7 +75,7 @@
         <div class="mt-4 mb-4 text-center text-light h5">{{ userAmountSide2 }} Ever</div>
       </div>
     </div>
-    <div class="container text-center text-light mt-4 footer">
+    <div id="roundContract" class="container text-center text-light mt-4 footer">
       Round contract: <b-link class="link-light" :href="explorer + '/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
     </div>
     <BaseFooter></BaseFooter>
@@ -242,20 +242,23 @@ export default Vue.extend({
 
       const currTotalData: { side1: number; side2: number } | undefined = await getUserBetsData()
       if(typeof currTotalData == 'undefined') return
+      //if no changes exit
+      if(currTotalData.side1 > this.prevTotalData.side1 && currTotalData.side2 > this.prevTotalData.side2) return
+
       let amount: number
 
-      if (currTotalData.side1 > this.prevTotalData.side1) {
-        amount = currTotalData.side1 - this.prevTotalData.side1
+      if (currTotalData.side1 > this.prevTotalData.side1) {        
+        amount = currTotalData.side1 - this.prevTotalData.side1        
         this.amountTooltipMsgLeft = '+' + amount.toString()
         this.showTooltipLeft = true
-        await sleep(2e3)
+        await sleep(5e3)
         this.showTooltipLeft = false
       }else
       if (currTotalData.side2 > this.prevTotalData.side2) {
         amount = currTotalData.side2 - this.prevTotalData.side2
-        this.amountTooltipMsgRight = '+' + amount.toString()
+        this.amountTooltipMsgRight = '+' + amount.toString()               
         this.showTooltipRight = true
-        await sleep(2e3)
+        await sleep(5e3)
         this.showTooltipRight = false
       }else{
         return
@@ -312,12 +315,6 @@ export default Vue.extend({
   width: 5em;
 }
 
-#footer {
-  position: absolute;
-  height: 100px;
-  bottom: 0;
-  width: 100%;
-}
 #leftBetTip,
 #rightBetTip {
   margin-left: 0.5em;
@@ -327,5 +324,9 @@ export default Vue.extend({
 #copyBtnRight {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+#roundContract {
+  word-break: break-all;
 }
 </style>
