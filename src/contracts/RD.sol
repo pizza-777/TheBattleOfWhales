@@ -1,5 +1,6 @@
 pragma ever-solidity >=0.71.0;
 
+import "./Config.sol";
 import "./Round.sol";
 
 contract RD {
@@ -15,7 +16,8 @@ contract RD {
         placeBet();
     }
 
-    //replenish balance of this contract with this function,
+    //this function maybe unused because this contract use only the players money but let it be
+    //It can replenish balance of this contract,
     //because direct payment go to receive and bet
     function replenish() public {}
 
@@ -35,12 +37,12 @@ contract RD {
         if (roundAddress != _roundAddress) {
             roundAddress = new Round{
                 stateInit: buildRoundContractInitData(roundStart, roundEnd),
-                value: 1e8, //credit 1 ever to Round.sol. This value will returned after first bet
-                flag: 0
-            }(); //pay deploying fee from value
-            //  betAttachValue -= 1e8; //repay deployed money spent
+                value: 1e8, //this 0.1 Ever is taking from player 
+                flag: 0 //pay deploying fee from value          
+            }(); 
         }
 
+        //send all to round, only 0.1 remains (see tvm.rawreserve above)
         Round(_roundAddress).placeBet{value: 0, flag: 128}(
             side,
             msg.sender,
@@ -49,9 +51,9 @@ contract RD {
     }
 
     function roundTime() public pure returns (uint32, uint32) {
-        uint32 currTime = block.timestamp;
-        uint32 period = 6 * 60; //* 60; //6 min
-        uint32 periods = currTime / period;
+        uint32 currTime = block.timestamp; // time in seconds
+        uint32 period = Config.period; 
+        uint32 periods = currTime / period; // rounded to floor
         uint32 roundStart = periods * period;
         uint32 roundEnd = roundStart + period;
         return (roundStart, roundEnd);

@@ -12,7 +12,6 @@ import { authState, login, logout } from "@/wallet";
 
 export default Vue.extend({
   name: "LoginLogout",
-  props: ['authProp'],
   data() {
     return {
       ls: null,
@@ -43,11 +42,6 @@ export default Vue.extend({
   },
   async created() {
     await this.authorization()
-  },
-  watch: {
-    authProp: function (){
-      this.authorization();
-    }
   }
 });
 </script>

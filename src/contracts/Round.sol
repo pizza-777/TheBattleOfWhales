@@ -39,7 +39,7 @@ contract Round {
 
     function replenish() public {}
 
-    function deployBetContract(address player) public view returns (address) {
+    function deployBetContract(address player) private view returns (address) {
         return
             new Bet{
                 stateInit: buildBetContractInitData(player),
@@ -72,11 +72,7 @@ contract Round {
     function placeBet(uint2 side, address player, uint128 betValue) public {
         require(side == 1 || side == 2, 101, "Wrong side");
         address sender = side == 1 ? RD1 : RD2;
-        require(sender == msg.sender, 101, "Only RD contract can send");
-        // if (block.timestamp < (roundStart + 60) || block.timestamp > roundEnd) {
-        //     player.transfer({value: 0, flag: 64});
-        //     return;
-        // }
+        require(sender == msg.sender, 101, "Only RD contract can send");       
         // I don't know is BetContracts exists or not, then trying to deploying it
         address betAddress = deployBetContract(player);
 

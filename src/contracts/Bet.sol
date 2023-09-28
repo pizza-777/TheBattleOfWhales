@@ -45,7 +45,9 @@ contract Bet {
             player.transfer({value: 0, flag: 64});
             return;
         }
-        tvm.rawReserve(1e6, 2);
+        // I think 0.001 Evers is enough for storing data some time. 
+        // After the reward is claimed this contact is only for hystory
+        tvm.rawReserve(1e6, 2); 
         claimedReward = true;
         Round(round).claimReward{value: 0, flag: 128}(
             player,

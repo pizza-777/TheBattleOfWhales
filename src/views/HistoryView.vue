@@ -41,7 +41,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      authTrigger: false,
       fields: ['Ended', 'Address', 'Total'],
       rounds: [] as Array<{Ended: string, Address: string, Total: number, RoundEndTimestamp: number}>,
       perPage: 10,

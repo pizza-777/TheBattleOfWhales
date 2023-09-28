@@ -74,7 +74,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      authTrigger: false,
       fishInputAmount1: 0,
       fishInputAmount2: 0,
       alert: false,

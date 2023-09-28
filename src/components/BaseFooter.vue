@@ -19,10 +19,18 @@
         </b-td>
       </b-tr>
       <b-tr>
-        <b-td> </b-td>
-        <b-td class="col-md-4">
-          <div variant="outline-secondary">
-            <a href="https://github.com/pizza-777/TheBattleOfWhales" target="_blank" class="link-light"><b>GitHub</b></a>
+        <b-td class="col-md-4 sm">
+          <div variant="outline-secondary" >
+            <a href="https://pizza-777.github.io/TheBattleOfWhales/" target="_blank" class="link-light">
+              <span class="text-muted small strong">Demo (devnet)</span>
+            </a>
+          </div>
+        </b-td>
+        <b-td>
+          <div variant="outline-secondary sm">
+            <a href="https://github.com/pizza-777/TheBattleOfWhales" target="_blank" class="link-light">
+              <span class="text-muted small strong">Source code</span>
+            </a>
           </div>
         </b-td>
         <b-td> </b-td>
@@ -34,8 +42,7 @@
 import Vue from 'vue'
 //sticky footer 
 // create an Observer instance
-const resizeObserver = new ResizeObserver(entries => {
-  console.log('Body height changed:', entries[0].target.clientHeight)
+const resizeObserver = new ResizeObserver(() => {
   const footer = document.getElementById('footer')
   const bodyH = document.body.scrollHeight + 100
   const screenH = screen.availHeight
@@ -67,11 +74,12 @@ export default Vue.extend({
   width: 100%;
 }
 
-#footer-links {
-  color: rgba(255, 255, 255, 0.5) !important;
+#footer-links a {
+ text-decoration: none;
 }
 
 td {
   width: 33.3%;
 }
+
 </style>
