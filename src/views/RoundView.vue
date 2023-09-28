@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container mt-5 mb-5" id="fishBox">
-      <div style="margin-right: 1em;">
+      <div style="margin-right: 1em">
         <div id="leftFish" ref="leftFish">🐋</div>
         <div id="totalAmountSide1" class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
 
@@ -53,7 +53,12 @@
         </div>
       </div>
     </div>
-    <div class="container text-light text-center">Round state: {{ roundState }}</div>
+    <div class="text-center">
+      <b-button v-if="roundState == 'Finished' && winState" variant="outline-primary" class="mb-4" :href="`./#/round/${roundContractAddress}`">Claim reward</b-button>
+    </div>
+    <div class="container text-light text-center">
+      <span>Round state: {{ roundState }}</span>
+    </div>
     <div class="container">
       <b-progress :value="progressValue" height="0.4rem" variant="secondary" :max="progressMax" :show-value="false"></b-progress>
     </div>
@@ -127,10 +132,11 @@ export default Vue.extend({
       amountTooltipMsgRight: '',
       showTooltipLeft: false,
       showTooltipRight: false,
+      winState: false,
     }
   },
   methods: {
-    async _bet(side: 1 | 2) {     
+    async _bet(side: 1 | 2) {
       if ((await authState()) == false) {
         this.systemAlert = true
         this.systemAlertMessage = 'Connect your wallet'
@@ -138,14 +144,14 @@ export default Vue.extend({
         this.systemAlert = false
         return
       }
-      if(this.roundState == 'Finished'){
+      if (this.roundState == 'Finished') {
         this.systemAlert = true
         this.systemAlertMessage = 'This round is finished. The next round will be in one minute'
         await sleep(5000)
         this.systemAlert = false
         return
       }
-      if(this.roundState == 'Prepearing...'){
+      if (this.roundState == 'Prepearing...') {
         this.systemAlert = true
         this.systemAlertMessage = 'This round is prepearing now. The next round will be in one minute'
         await sleep(5000)
@@ -160,7 +166,7 @@ export default Vue.extend({
         this.systemAlert = false
         return
       }
-      await bet(side, Number(amount) * 1e9)     
+      await bet(side, Number(amount) * 1e9)
     },
     async _copy(side: number) {
       if (side == 1) (this.$refs.leftAddr as HTMLInputElement).focus()
@@ -197,6 +203,8 @@ export default Vue.extend({
         this.roundState = 'Running'
       } else if (this.currentTime > this.roundEndTimestamp) {
         this.roundState = 'Finished'
+        if (this.userAmountSide1 > 0 && this.totalAmountSide1 > this.totalAmountSide2) this.winState = true
+        if (this.userAmountSide2 > 0 && this.totalAmountSide2 > this.totalAmountSide1) this.winState = true
       }
     },
     updateAll() {
@@ -238,26 +246,25 @@ export default Vue.extend({
       if (this.roundState !== 'Running') return
 
       const currTotalData: { side1: number; side2: number } | undefined = await getUserBetsData()
-      if(typeof currTotalData == 'undefined') return
+      if (typeof currTotalData == 'undefined') return
       //if no changes exit
-      if(currTotalData.side1 > this.prevTotalData.side1 && currTotalData.side2 > this.prevTotalData.side2) return
+      if (currTotalData.side1 > this.prevTotalData.side1 && currTotalData.side2 > this.prevTotalData.side2) return
 
       let amount: number
 
-      if (currTotalData.side1 > this.prevTotalData.side1) {        
-        amount = currTotalData.side1 - this.prevTotalData.side1        
+      if (currTotalData.side1 > this.prevTotalData.side1) {
+        amount = currTotalData.side1 - this.prevTotalData.side1
         this.amountTooltipMsgLeft = '+' + amount.toString()
         this.showTooltipLeft = true
         await sleep(5e3)
         this.showTooltipLeft = false
-      }else
-      if (currTotalData.side2 > this.prevTotalData.side2) {
+      } else if (currTotalData.side2 > this.prevTotalData.side2) {
         amount = currTotalData.side2 - this.prevTotalData.side2
-        this.amountTooltipMsgRight = '+' + amount.toString()               
+        this.amountTooltipMsgRight = '+' + amount.toString()
         this.showTooltipRight = true
         await sleep(5e3)
         this.showTooltipRight = false
-      }else{
+      } else {
         return
       }
       this.prevTotalData = currTotalData
