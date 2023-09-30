@@ -68,7 +68,7 @@ export default Vue.extend({
 </script>
 <style scoped>
 #footer {
-  background-color: rgb(93, 93, 97, 0.1) !important;
+/*  background-color: rgb(93, 93, 97, 0.1) !important;*/
   bottom: 0;
   left: 0;
   width: 100%;

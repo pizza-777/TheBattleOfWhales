@@ -32,7 +32,7 @@
           <b-input-group-append>
             <b-button variant="outline-primary" id="copyBtnClaim" @click="_copy()"> Copy </b-button>
             <b-icon icon="question-circle" id="claimTip" aria-label="Help"></b-icon>
-            <b-tooltip target="claimTip" variant="dark">Direct claim — send 0.1 Ever to this address</b-tooltip>
+            <b-tooltip target="claimTip" :placement="isMobile() ? 'left' : 'top'" variant="dark">Direct claim — send 0.1 Ever to this address</b-tooltip>
             <b-tooltip target="copyBtnClaim" variant="dark" triggers="click">Copied</b-tooltip>
           </b-input-group-append>
         </b-input-group>
@@ -44,7 +44,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { getRoundDataByAddress, claim, getUserDataByRound, calcFee } from '@/wallet'
-import { calcUserReward, sleep } from '@/utils'
+import { calcUserReward, sleep, isMobile } from '@/utils'
 
 export default Vue.extend({
   name: 'HomeView',
@@ -91,6 +91,7 @@ export default Vue.extend({
       userBetsAddress: '',
       userBox: false,
       fee: 0,
+      isMobile
     }
   },
   methods: {
