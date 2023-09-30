@@ -44,7 +44,7 @@ import Vue from 'vue'
 // create an Observer instance
 const resizeObserver = new ResizeObserver(() => {
   const footer = document.getElementById('footer')
-  const bodyH = document.body.scrollHeight + 100
+  const bodyH = document.body.scrollHeight + 176
   const screenH = screen.availHeight
   if (footer)
     if (bodyH > screenH) {
