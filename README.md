@@ -1,6 +1,6 @@
 # 
 
-Battle-of-Whales is a game based on Everscale blockchain.
+Battle-of-Whales is a Web3 game based on Everscale blockchain.
 
 ## Project setup
 
@@ -11,21 +11,12 @@ npm install
 ### Compiles and hot-reloads for development
 
 ```
-npm run serve
+npm run s
 ```
 
 ### Compiles and minifies for production
 
 ```
-npm run build
-```
-
-### Lints and fixes files
+npm run prod
 
 ```
-npm run lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
