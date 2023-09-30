@@ -62,7 +62,9 @@
     <div class="container">
       <b-progress :value="progressValue" height="0.4rem" variant="secondary" :max="progressMax" :show-value="false"></b-progress>
     </div>
-
+    <div class="container text-light text-center">
+      <span>{{ countDown }}</span>
+    </div>
     <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} — {{ roundEnd }}</div>
     <div class="container text-center mt-4">
       <b-alert mt-4 mb-4 fade :show="systemAlert">{{ systemAlertMessage }}</b-alert>
@@ -89,6 +91,7 @@ import { RD1Address, RD2Address, roundDuration } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, setUpSubscriptions, tearDownSubscriptions } from '@/wallet'
 import { sleep } from '@/utils'
 import { explorer } from '@/connection'
+import moment from 'moment'
 
 export default Vue.extend({
   name: 'HomeView',
@@ -133,6 +136,7 @@ export default Vue.extend({
       showTooltipLeft: false,
       showTooltipRight: false,
       winState: false,
+      countDown: 0,
     }
   },
   methods: {
@@ -199,8 +203,16 @@ export default Vue.extend({
     updateRoundState() {
       if (this.currentTime < this.roundStartTimestamp + 60 * 1000) {
         this.roundState = 'Prepearing...'
+        this.countDown = moment
+          .unix(60 - (Date.now() - this.roundStartTimestamp) / 1000)
+          .utc()
+          .format('mm [:] ss')
       } else if (this.currentTime > this.roundStartTimestamp + 60 * 1000 && this.currentTime < this.roundEndTimestamp) {
         this.roundState = 'Running'
+        this.countDown = moment
+          .unix(roundDuration - (roundDuration * this.progressValue) / 100)
+          .utc()
+          .format('HH [:] mm [:] ss')
       } else if (this.currentTime > this.roundEndTimestamp) {
         this.roundState = 'Finished'
         if (this.userAmountSide1 > 0 && this.totalAmountSide1 > this.totalAmountSide2) this.winState = true
