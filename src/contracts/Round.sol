@@ -112,6 +112,7 @@ contract Round {
         player.transfer({value: reward, flag: 64});
     }
 
+    //calculating proportionally: more bets count - more fee 
     function calcProcessingFee(
         uint128 countPlayerBetsSide1,
         uint128 countPlayerBetsSide2
@@ -146,6 +147,7 @@ contract Round {
         }
     }
 
+    //calculating proportionally: more bets value - more win amount
     function calcReward(
         uint128 amountOnSide1,
         uint128 amountOnSide2
