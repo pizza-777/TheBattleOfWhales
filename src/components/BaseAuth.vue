@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isMobile()">
+  <div v-if="!isMobile()">
     <nav class="text-right mt-2" style="text-align: right">
       <span @click="_loginLogout()" class="btn-link text-light" style="cursor: pointer; padding-right: 2em">{{ ls }}</span>
     </nav>

@@ -81,7 +81,7 @@
       </div>
     </div>
     <div id="roundContract" class="container text-center text-light mt-4 footer">
-      Round contract: <b-link class="link-light" :href="explorer + '/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
+      Round: <b-link class="link-light" :href="explorer + '/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ isMobile() ? roundContractAddress.slice(0, 12) + ' . . . ' + roundContractAddress.slice(58) : roundContractAddress }}</b-link>
     </div>
   </div>
 </template>
@@ -221,7 +221,7 @@ export default Vue.extend({
       }
     },
     updateAll() {
-      getRoundTime().then((time) => {
+      getRoundTime().then((time) => {        
         this.roundStart = new Date(time.roundStart * 1000).toLocaleTimeString()
         this.roundEnd = new Date(time.roundEnd * 1000).toLocaleTimeString()
         this.roundStartTimestamp = time.roundStart * 1000
