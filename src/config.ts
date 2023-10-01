@@ -1,5 +1,5 @@
 
-export const RD1Address='0:5e68a5df9064bebc2f262b4f9ab8f39bac3f2e23b211be7125f49cf22b3fc425'
-export const RD2Address='0:83f14b7b651fde36b401b79c89d424e2aa188ec54dfc3f842d0fc53fe3347ff4'
+export const RD1Address='0:28be06b9b0b0013ac7aa06f4274c1b11ccc0dd8ba44c1a4d622e70c93e7b95d4'
+export const RD2Address='0:09b79d7417c7e3a70d73558b650b1fcd36d7cd899f04ebf1615236005356e637'
 export const roundDuration=60*60 * 6 //6 hours
 export const network: 'localnet' | 'mainnet' | 'testnet' = 'mainnet' 

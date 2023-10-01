@@ -31,7 +31,7 @@ export default Vue.extend({
       if (typeof this.$network == 'undefined') return
       if (this.network !== this.$network) {
         this.systemAlert = true
-        this.systemAlertMessage = 'Switch EverWallet to the ' + this.network + ' network. Your wallet using ' + this.$network + 'now.'
+        this.systemAlertMessage = 'Switch EverWallet to the ' + this.network + ' network. Your wallet using ' + this.$network + ' now.'
       } else {
         this.systemAlert = false
       }

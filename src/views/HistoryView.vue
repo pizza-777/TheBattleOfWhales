@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="rounds.length == 0" class="text-center text-light h4">No past rounds yet</div>
+    <div v-if="rounds && rounds.length == 0" class="text-center text-light h4">No past rounds yet</div>
     <div v-else class="text-center text-light h4">Past rounds</div>
-    <div v-if="rounds.length > 0"  class="container mt-4 mb-4">      
+    <div v-if="rounds && rounds.length > 0"  class="container mt-4 mb-4">      
       <b-table style="background-color: rgb(93, 93, 97, 0.2) !important; color: rgba(255,255,255, 0.9) !important; border-radius: 5px; word-break: break-all;" :items="rounds" :fields="fields" :per-page="perPage" :current-page="currentPage">
         <template #cell(Address)="data">
           <span v-html="data.value"></span>

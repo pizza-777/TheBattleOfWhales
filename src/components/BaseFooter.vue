@@ -20,7 +20,7 @@
       </b-tr>
       <b-tr>
         <b-td class="col-md-4 sm">
-          <div variant="outline-secondary" >
+          <div variant="outline-secondary">
             <a href="https://pizza-777.github.io/TheBattleOfWhales/" target="_blank" class="link-light">
               <span class="text-muted small strong">Demo (devnet)</span>
             </a>
@@ -40,12 +40,13 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
-//sticky footer 
+//sticky footer
 // create an Observer instance
 const resizeObserver = new ResizeObserver(() => {
   const footer = document.getElementById('footer')
   const bodyH = document.body.scrollHeight
-  const screenH = screen.availHeight
+
+  const screenH = window.innerHeight - 50
   if (footer)
     if (bodyH > screenH) {
       footer.style.position = 'relative'
@@ -68,18 +69,17 @@ export default Vue.extend({
 </script>
 <style scoped>
 #footer {
-/*  background-color: rgb(93, 93, 97, 0.1) !important;*/
+  /*  background-color: rgb(93, 93, 97, 0.1) !important;*/
   bottom: 0;
   left: 0;
   width: 100%;
 }
 
 #footer-links a {
- text-decoration: none;
+  text-decoration: none;
 }
 
 td {
   width: 33.3%;
 }
-
 </style>
