@@ -44,7 +44,7 @@ import Vue from 'vue'
 // create an Observer instance
 const resizeObserver = new ResizeObserver(() => {
   const footer = document.getElementById('footer')
-  const bodyH = document.body.scrollHeight + 100
+  const bodyH = document.body.scrollHeight
   const screenH = screen.availHeight
   if (footer)
     if (bodyH > screenH) {
@@ -68,7 +68,7 @@ export default Vue.extend({
 </script>
 <style scoped>
 #footer {
-  background-color: rgb(93, 93, 97, 0.1) !important;
+/*  background-color: rgb(93, 93, 97, 0.1) !important;*/
   bottom: 0;
   left: 0;
   width: 100%;

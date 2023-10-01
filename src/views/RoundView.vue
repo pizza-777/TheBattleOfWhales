@@ -47,7 +47,7 @@
               <b-button variant="outline-primary" id="copyBtnRight" @click="_copy(2)">Copy</b-button>
               <b-tooltip target="copyBtnRight" variant="dark" triggers="click">Copied</b-tooltip>
               <b-icon icon="question-circle" id="rightBetTip" variant="light" aria-label="Help"></b-icon>
-              <b-tooltip target="rightBetTip" variant="dark">Direct bet — send to this address. Min amount 1 Ever.</b-tooltip>
+              <b-tooltip trigger="hover" target="rightBetTip" :placement="isMobile() ? 'left' : 'top'" variant="dark">Direct bet — send to this address. Min amount 1 Ever.</b-tooltip>
             </b-input-group-append>
           </b-input-group>
         </div>
@@ -67,7 +67,7 @@
     </div>
     <div class="container text-center text-light mt-4 mb-4">Time: {{ roundStart }} — {{ roundEnd }}</div>
     <div class="container text-center mt-4">
-      <b-alert mt-4 mb-4 fade :show="systemAlert">{{ systemAlertMessage }}</b-alert>
+      <b-alert style="background-color: rgb(93, 93, 97, 0.5)" variant="outline-primary" class="text-light mt-4 mb-4" fade :show="systemAlert">{{ systemAlertMessage }}</b-alert>
     </div>
     <BaseNetwork></BaseNetwork>
     <div class="container text-center mt-4">
@@ -81,7 +81,7 @@
       </div>
     </div>
     <div id="roundContract" class="container text-center text-light mt-4 footer">
-      Round contract: <b-link class="link-light" :href="explorer + '/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ roundContractAddress }}</b-link>
+      Round: <b-link class="link-light" :href="explorer + '/accounts/accountDetails?id=' + roundContractAddress" target="_blank">{{ isMobile() ? roundContractAddress.slice(0, 12) + ' . . . ' + roundContractAddress.slice(58) : roundContractAddress }}</b-link>
     </div>
   </div>
 </template>
@@ -89,7 +89,7 @@
 import Vue from 'vue'
 import { RD1Address, RD2Address, roundDuration } from '@/config'
 import { authState, bet, getRoundTime, getRoundContractAddress, getBetsData, getUserBetsData, setUpSubscriptions, tearDownSubscriptions } from '@/wallet'
-import { sleep } from '@/utils'
+import { sleep, isMobile } from '@/utils'
 import { explorer } from '@/connection'
 import moment from 'moment'
 
@@ -137,6 +137,7 @@ export default Vue.extend({
       showTooltipRight: false,
       winState: false,
       countDown: 0,
+      isMobile
     }
   },
   methods: {
@@ -220,7 +221,7 @@ export default Vue.extend({
       }
     },
     updateAll() {
-      getRoundTime().then((time) => {
+      getRoundTime().then((time) => {        
         this.roundStart = new Date(time.roundStart * 1000).toLocaleTimeString()
         this.roundEnd = new Date(time.roundEnd * 1000).toLocaleTimeString()
         this.roundStartTimestamp = time.roundStart * 1000
