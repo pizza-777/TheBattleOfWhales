@@ -66,8 +66,7 @@ export default Vue.extend({
       this.claimedReward = data.claimedReward
       this.claimDisabled = this.claimedReward
       this.userReward = calcUserReward(this.userAmountSide1, this.userAmountSide2, this.totalAmountSide1, this.totalAmountSide2)
-      this.userBox = true
-      console.log(this.roundContractAddress, data.countSide1, data.countSide2)
+      this.userBox = true      
       this.fee = await calcFee(this.roundContractAddress, data.countSide1, data.countSide2)
       this.fee = Number((this.fee / 1e9).toFixed(2))
     })

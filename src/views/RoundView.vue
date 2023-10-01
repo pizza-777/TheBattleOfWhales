@@ -6,14 +6,13 @@
         <div id="totalAmountSide1" class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide1 }} EVER</div>
 
         <b-tooltip :show.sync="showTooltipLeft" target="totalAmountSide1" placement="top">
-          {{ amountTooltipMsgLeft }}
+           <span style="font-size:1.3rem">{{ amountTooltipMsgLeft }}</span>
         </b-tooltip>
         <div id="leftFishInputAmount" v-if="userBox">
           <b-form-input autocomplete="off" block v-model="fishInputAmount1"></b-form-input>
         </div>
         <div id="leftFishBtn" v-if="userBox">
-          <b-button id="betBtnLeft" block variant="outline-primary" @click="_bet(1)">Bet</b-button>
-          <!-- <b-tooltip target="betBtnLeft" triggers="click">Sent</b-tooltip>  -->
+          <b-button id="betBtnLeft" block variant="outline-primary" @click="_bet(1)">Bet</b-button>          
         </div>
         <div id="leftAddr" class="mt-3">
           <b-input-group size="sm">
@@ -31,7 +30,7 @@
         <div id="rightFish" ref="rightFish">🐋</div>
         <div id="totalAmountSide2" class="mt-4 mb-4 text-center text-light h4">{{ totalAmountSide2 }} EVER</div>
         <b-tooltip :show.sync="showTooltipRight" target="totalAmountSide2" placement="top">
-          {{ amountTooltipMsgRight }}
+          <span style="font-size:1.3rem">{{ amountTooltipMsgRight }}</span>
         </b-tooltip>
         <div id="rightFishInputAmount" v-if="userBox">
           <b-form-input autocomplete="off" v-model="fishInputAmount2"></b-form-input>
@@ -261,7 +260,7 @@ export default Vue.extend({
       const currTotalData: { side1: number; side2: number } | undefined = await getUserBetsData()
       if (typeof currTotalData == 'undefined') return
       //if no changes exit
-      if (currTotalData.side1 > this.prevTotalData.side1 && currTotalData.side2 > this.prevTotalData.side2) return
+      if (currTotalData.side1 == this.prevTotalData.side1 && currTotalData.side2 == this.prevTotalData.side2) return
 
       let amount: number
 
